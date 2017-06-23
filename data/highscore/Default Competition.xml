@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:leaderboard xmlns:ns2="leaderboard">
+    <entry>
+        <date>2017-06-23</date>
+        <score>
+            <id>0</id>
+            <name>pizzaBot</name>
+            <points>796</points>
+            <ranking>1</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-23</date>
+        <score>
+            <id>1</id>
+            <name>moneyBot</name>
+            <points>0</points>
+            <ranking>2</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-23</date>
+        <score>
+            <id>2</id>
+            <name>ExCells26</name>
+            <points>0</points>
+            <ranking>2</ranking>
+        </score>
+    </entry>
+    <maxEntries>10</maxEntries>
+</ns2:leaderboard>

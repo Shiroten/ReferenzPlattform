@@ -7,7 +7,8 @@ import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -76,8 +77,8 @@ public class PathFinder {
         }
 
         @Override
-        public String toString(){
-            return ""+coordinate + " F(x):" +fx + "In sight: " + isInSight;
+        public String toString() {
+            return "" + coordinate + " F(x):" + fx + "In sight: " + isInSight;
         }
     }
 
@@ -99,7 +100,7 @@ public class PathFinder {
             if (currentNode.getCoordinate().equals(destination)) {
                 return getSecondNode(currentNode).coordinate.minus(start);
             }
-            if(!currentNode.isInSight)
+            if (!currentNode.isInSight)
                 return getSecondNode(currentNode).coordinate.minus(start);
 
             closedList.add(currentNode);
@@ -158,7 +159,7 @@ public class PathFinder {
                             && entityTypeAtNewField != EntityType.WALL
                             && entityTypeAtNewField != EntityType.BAD_BEAST;
             }
-            if(!context.isMine(coordinate))
+            if (!context.isMine(coordinate))
                 return false;
 
         } catch (OutOfViewException e) {
@@ -177,12 +178,11 @@ public class PathFinder {
             else if (n.isInSight()) {
                 if (n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance())
                     min = n;
-                else if(n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance()
+                else if (n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance()
                         && XYsupport.distanceInSteps(start, n.getCoordinate()) <= XYsupport.distanceInSteps(start, min.getCoordinate()))
                     min = n;
-            }
-            else if(!n.isInSight())
-                if(n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance())
+            } else if (!n.isInSight())
+                if (n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance())
                     min = n;
 
         }
@@ -237,7 +237,7 @@ public class PathFinder {
             try {
                 if (context.getEntityAt(position.plus(direction)) == EntityType.BAD_BEAST)
                     cumulatedWeight = cumulatedWeight + multiplier * 150;
-                else if(context.getEntityAt(position.plus(direction)) == EntityType.MASTER_SQUIRREL
+                else if (context.getEntityAt(position.plus(direction)) == EntityType.MASTER_SQUIRREL
                         && !context.isMine(position.plus(direction)))
                     cumulatedWeight = cumulatedWeight + multiplier * 300;
             } catch (OutOfViewException e) {

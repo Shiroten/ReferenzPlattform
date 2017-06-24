@@ -1,18 +1,22 @@
 package ExCells26.Squirrel;
 
+import ExCells26.Helper.Exceptions.FieldUnreachableException;
+import ExCells26.Helper.Exceptions.FullFieldException;
 import ExCells26.Helper.Exceptions.NoTargetException;
+import ExCells26.Helper.PathFinder;
 import ExCells26.Helper.XYsupport;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Created by Shiroten on 24.06.2017.
  */
 public class SquirrelHelper {
+
+
 
     public static XY safeField(ControllerContext view) throws NoTargetException {
         ArrayList<XY> freeFields = new ArrayList<>();
@@ -101,5 +105,17 @@ public class SquirrelHelper {
         return positionOfTentativelyTarget;
     }
 
+    public static XY tryAgain(XY centrum, ControllerContext view, PathFinder pathFinder) throws FullFieldException {
+        for (int multiplier = 0; multiplier < 10; multiplier++) {
+            for (XY vector : XYsupport.directions()) {
+                try {
+                    pathFinder.directionTo(view.locate(), centrum.plus(vector.times(multiplier)), view);
+                    return centrum.plus(vector.times(multiplier));
+                } catch (FullFieldException | FieldUnreachableException e) {
+                }
+            }
+        }
+        throw new FullFieldException();
+    }
 
 }

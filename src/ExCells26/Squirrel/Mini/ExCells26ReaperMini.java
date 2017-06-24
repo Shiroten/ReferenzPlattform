@@ -6,6 +6,7 @@ import ExCells26.Helper.Cell;
 import ExCells26.Helper.Exceptions.*;
 import ExCells26.Helper.PathFinder;
 import ExCells26.Helper.XYsupport;
+import de.hsa.games.fatsquirrel.Launcher;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
@@ -13,6 +14,7 @@ import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 /**
  * Created by Shiroten on 15.06.2017.
@@ -21,10 +23,10 @@ public class ExCells26ReaperMini implements BotController {
 
     BotCom botCom;
     private Cell myCell;
-
     ArrayList<XY> unReachableGoodies = new ArrayList<>();
     private XY cornerVector = XY.UP;
     boolean goToMaster = false;
+    private Logger logger = Logger.getLogger(Launcher.class.getName());
 
     public ExCells26ReaperMini(BotCom botCom) {
         this.botCom = botCom;
@@ -86,6 +88,7 @@ public class ExCells26ReaperMini implements BotController {
             try {
                 if (view.isMine(view.locate().plus(toMove))) {
                     view.doNothing();
+                    return;
                 }
             } catch (OutOfViewException e) {
                 //Todo: add log

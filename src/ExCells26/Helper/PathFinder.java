@@ -146,11 +146,6 @@ public class PathFinder {
 
         try {
             entityTypeAtNewField = context.getEntityAt(coordinate);
-        } catch (OutOfViewException e) {
-            return true;
-        }
-
-        try {
             if (context.getEntityAt(start) == EntityType.MINI_SQUIRREL) {
                 if (entityTypeAtNewField == EntityType.MASTER_SQUIRREL)
                     return context.isMine(coordinate) && walkOnMaster;
@@ -159,7 +154,7 @@ public class PathFinder {
                             && entityTypeAtNewField != EntityType.WALL
                             && entityTypeAtNewField != EntityType.BAD_BEAST;
             }
-            if (!context.isMine(coordinate))
+            if (!context.isMine(coordinate) && (entityTypeAtNewField == EntityType.MASTER_SQUIRREL || entityTypeAtNewField == EntityType.MINI_SQUIRREL))
                 return false;
 
         } catch (OutOfViewException e) {

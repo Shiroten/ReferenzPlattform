@@ -19,6 +19,7 @@ public class PathFinder {
     private ControllerContext context;
     private BotCom botCom;
     private XY start, destination;
+    private boolean walkOnMaster;
 
     public PathFinder(BotCom botCom) {
         this.botCom = botCom;
@@ -30,7 +31,6 @@ public class PathFinder {
         private double fx;
         private Node predecessor;
         private boolean isInSight;
-
         private int destinationDistance;
 
         Node(XY coordinate, boolean isInSight) {
@@ -86,6 +86,7 @@ public class PathFinder {
         closedList = new ArrayList<>();
         start = context.locate();
         this.destination = destination;
+        this.walkOnMaster = walkOnMaster;
 
         openList.add(new Node(start, true));
         this.context = context;
@@ -145,18 +146,15 @@ public class PathFinder {
         try {
             entityTypeAtNewField = context.getEntityAt(coordinate);
         } catch (OutOfViewException e) {
-            //throws to many false FullFieldException if set to false because of OutOfViewExceptions;
             return true;
         }
 
-        //if (!XYsupport.isInRange(coordinate, context.getViewUpperLeft().plus(XY.LEFT_UP), context.getViewLowerRight().plus(XY.RIGHT_DOWN)))
-            //return false;
         try {
-            if (context.getEntityAt(context.locate()) == EntityType.MINI_SQUIRREL) {
-                if (context.getEntityAt(coordinate) == EntityType.MASTER_SQUIRREL)
-                    return context.isMine(coordinate);
+            if (context.getEntityAt(start) == EntityType.MINI_SQUIRREL) {
+                if (entityTypeAtNewField == EntityType.MASTER_SQUIRREL)
+                    return context.isMine(coordinate) && walkOnMaster;
                 else
-                    return context.getEntityAt(coordinate) != EntityType.MINI_SQUIRREL
+                    return entityTypeAtNewField != EntityType.MINI_SQUIRREL
                             && entityTypeAtNewField != EntityType.WALL
                             && entityTypeAtNewField != EntityType.BAD_BEAST
                             && entityTypeAtNewField != EntityType.BAD_PLANT;

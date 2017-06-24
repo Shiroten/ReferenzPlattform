@@ -189,7 +189,7 @@ public class ExCells26Master implements BotController {
         PathFinder pf = new PathFinder(botCom);
         XY betterMove = XY.ZERO_ZERO;
         try {
-            betterMove = pf.directionTo(view.locate(), currentCell.getQuadrant(), view);
+            betterMove = pf.directionTo(currentCell.getQuadrant(), view, false);
         } catch (FullFieldException e) {
             try {
                 betterMove = SquirrelHelper.tryAgain(currentCell.getQuadrant(), view, pf);
@@ -211,7 +211,7 @@ public class ExCells26Master implements BotController {
         PathFinder pf = new PathFinder(botCom);
         XY toMove = XY.ZERO_ZERO;
         try {
-            toMove = pf.directionTo(view.locate(), middle, view);
+            toMove = pf.directionTo(middle, view, false);
         } catch (FullFieldException e) {
             logger.log(Level.WARNING, "FullFieldException of collectingReapers");
             logger.log(Level.WARNING, e.getMessage());

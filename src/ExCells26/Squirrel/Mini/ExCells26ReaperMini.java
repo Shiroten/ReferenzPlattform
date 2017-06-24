@@ -66,7 +66,7 @@ public class ExCells26ReaperMini implements BotController {
                 //Run back to myCell middle
                 PathFinder pf = new PathFinder(botCom);
                 try {
-                    toMove = pf.directionTo(view.locate(), myCell.getQuadrant(), view);
+                    toMove = pf.directionTo(myCell.getQuadrant(), view, false);
                 } catch (FullFieldException e2) {
                     try {
                         myCell.setUsableCell(false);
@@ -124,9 +124,8 @@ public class ExCells26ReaperMini implements BotController {
             }
             if (pf.isWalkable(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)), view)) {
                 try {
-                    return pf.directionTo(view.locate(),
-                            myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)),
-                            view);
+                    return pf.directionTo(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)),
+                            view, false);
                 } catch (FullFieldException | FieldUnreachableException e) {
                     cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
                 }
@@ -150,7 +149,7 @@ public class ExCells26ReaperMini implements BotController {
         }
         PathFinder pf = new PathFinder(botCom);
         try {
-            view.move(pf.directionTo(view.locate(), positionOfMaster, view));
+            view.move(pf.directionTo(positionOfMaster, view, false));
         } catch (FullFieldException | FieldUnreachableException e) {
             //Todo: add to Log
             String s = "executeGoToMaster Error";
@@ -187,7 +186,7 @@ public class ExCells26ReaperMini implements BotController {
         for (int i = 0; i < numberOfTries; i++) {
             positionOfGoodTarget = findNextGoodies(view);
             try {
-                toMove = pf.directionTo(view.locate(), positionOfGoodTarget, view);
+                toMove = pf.directionTo(positionOfGoodTarget, view, false);
                 return toMove;
             } catch (FullFieldException | FieldUnreachableException e) {
                 unReachableGoodies.add(positionOfGoodTarget);

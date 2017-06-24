@@ -77,7 +77,7 @@ public class ExCells26ReconMini implements BotController {
     private void moveToPoint(ControllerContext view, XY destination){
         PathFinder pathFinder = new PathFinder(botCom);
         try {
-            view.move(pathFinder.directionTo(view.locate(), destination, view));
+            view.move(pathFinder.directionTo(destination, view, false));
         } catch (FullFieldException e){
             moveToPoint(view, destination.plus(XY.RIGHT_DOWN));
         } catch (FieldUnreachableException e){

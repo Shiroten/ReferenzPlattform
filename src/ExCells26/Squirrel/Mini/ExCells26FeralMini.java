@@ -51,7 +51,7 @@ public class ExCells26FeralMini extends ExCells26ReaperMini implements BotContro
 
         PathFinder pf = new PathFinder(botCom);
         try {
-            view.move(pf.directionTo(view.locate(), toMove, view));
+            view.move(pf.directionTo(toMove, view, false));
         } catch (FullFieldException | FieldUnreachableException e) {
             //Worst Case no good possible Move
             view.move(XY.ZERO_ZERO);

@@ -30,15 +30,15 @@ public class BotCom {
     public XY positionOfExCellMaster;
 
     //Default: 21 (last working number)
-    int cellDistanceX = 15;
-    int cellDistanceY = 15;
+    int cellDistanceX = 9;
+    int cellDistanceY = 9;
 
     //Default: 11 (last working number)
-    private int cellCenterOffsetX = 7;
-    private int cellCenterOffsetY = 7;
+    private int cellCenterOffsetX = 5;
+    private int cellCenterOffsetY = 5;
 
     //Default: 21 (last working number)
-    private int cellsize = 21;
+    private int cellsize = 9;
 
     public int getCellDistanceX() {
         return cellDistanceX;

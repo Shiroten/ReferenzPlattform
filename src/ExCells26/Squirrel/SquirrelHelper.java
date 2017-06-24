@@ -17,7 +17,6 @@ import java.util.ArrayList;
 public class SquirrelHelper {
 
 
-
     public static XY safeField(ControllerContext view) throws NoTargetException {
         ArrayList<XY> freeFields = new ArrayList<>();
         for (int j = -2; j < 3; j++) {

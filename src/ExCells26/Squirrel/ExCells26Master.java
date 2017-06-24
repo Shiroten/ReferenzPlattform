@@ -48,7 +48,7 @@ public class ExCells26Master implements BotController {
             return;
         }
 
-        if (view.getEnergy() < 100) {
+        if (view.getRemainingSteps() < 100) {
             collectingReapers();
         }
 
@@ -57,9 +57,25 @@ public class ExCells26Master implements BotController {
             return;
         }
 
+        try {
+            if (view.getEnergy() > 1000 && botCom.isFreeCell()) {
+                spawningReaper(botCom.freeCell(), 200);
+                return;
+            } else if (view.getEnergy() > 1000) {
+                botCom.getAllCells();
+                botCom.expand();
+                spawningReaper(botCom.freeCell(), 200);
+                return;
+            }
+        } catch (FullGridException e) {
+            logger.log(Level.WARNING, "FullGridException of nextStep");
+        } catch (NoConnectingNeighbourException e) {
+            logger.log(Level.WARNING, "NoConnectingNeighbourException of nextStep");
+        }
+
         if (!(botCom.isFieldLimitFound() && view.getRemainingSteps() > 100
                 && maximumDensityOfNodes() && isSaturated())) {
-            if (currentCell.getQuadrant().minus(view.locate()).length() < 7.1) {
+            if (currentCell.getQuadrant().minus(view.locate()).length() < 10) {
                 if (firstTimeInCell && currentCell.getMiniSquirrel() != null) {
                     collectMiniOfCell();
                     return;
@@ -92,7 +108,6 @@ public class ExCells26Master implements BotController {
                     botCom.expand();
                 } catch (NoConnectingNeighbourException e) {
                     logger.log(Level.WARNING, "NoConnectingNeighbourException of getMoreMinis");
-                    logger.log(Level.WARNING, e.getMessage());
                 }
             }
         }
@@ -131,7 +146,8 @@ public class ExCells26Master implements BotController {
 
     private void spawnMoreMinis() {
         try {
-            spawningReaper(botCom.freeCell(), 200);
+            if (view.getEnergy() > 200)
+                spawningReaper(botCom.freeCell(), 200);
         } catch (FullGridException e) {
             logger.log(Level.WARNING, "FullGridException of spawnMoreMinis");
             logger.log(Level.WARNING, e.getMessage());
@@ -181,7 +197,6 @@ public class ExCells26Master implements BotController {
             }
         } catch (SpawnException | OutOfViewException e) {
             logger.log(Level.WARNING, "OutOfViewException of spawningReaper");
-            logger.log(Level.WARNING, e.getMessage());
         }
     }
 
@@ -195,12 +210,14 @@ public class ExCells26Master implements BotController {
                 betterMove = SquirrelHelper.tryAgain(currentCell.getQuadrant(), view, pf);
             } catch (FullFieldException e1) {
                 logger.log(Level.WARNING, "FullFieldException of moveToCurrentCell");
-                logger.log(Level.WARNING, e1.getMessage());
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Position: " + view.locate().toString());
+                logger.log(Level.WARNING, "Destination: " + currentCell.getQuadrant());
+                changeCurrentCell();
             }
         } catch (FieldUnreachableException e) {
             logger.log(Level.WARNING, "FieldUnreachableException of moveToCurrentCell");
-            logger.log(Level.WARNING, e.getMessage());
+            logger.log(Level.WARNING, "Position: " + view.locate().toString());
+            logger.log(Level.WARNING, "Destination: " + currentCell.getQuadrant());
             changeCurrentCell();
         }
         view.move(betterMove);
@@ -214,10 +231,8 @@ public class ExCells26Master implements BotController {
             toMove = pf.directionTo(middle, view, false);
         } catch (FullFieldException e) {
             logger.log(Level.WARNING, "FullFieldException of collectingReapers");
-            logger.log(Level.WARNING, e.getMessage());
         } catch (FieldUnreachableException e) {
             logger.log(Level.WARNING, "FieldUnreachableException of collectingReapers");
-            logger.log(Level.WARNING, e.getMessage());
         }
         view.move(XYsupport.normalizedVector(toMove));
     }
@@ -238,7 +253,6 @@ public class ExCells26Master implements BotController {
             }
         } catch (NoConnectingNeighbourException e) {
             logger.log(Level.WARNING, "NoConnectingNeighbourException of initOfMaster");
-            logger.log(Level.WARNING, e.getMessage());
         }
         botCom.setNextMiniTypeToSpawn(MiniType.RECON);
         for (XY direction : XYsupport.directions()) {

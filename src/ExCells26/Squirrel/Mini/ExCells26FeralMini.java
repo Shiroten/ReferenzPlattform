@@ -33,29 +33,5 @@ public class ExCells26FeralMini extends ExCells26ReaperMini implements BotContro
             return;
         }
 
-        XY toMove;
-        try {
-            toMove = calculateTarget(view);
-
-        } catch (NoTargetException e) {
-            toMove = XY.ZERO_ZERO;
-
-            /*
-            try {
-                toMove = botCom.freeCell().getQuadrant();
-            } catch (FullGridException e1) {
-                toMove = botCom.positionOfExCellMaster.minus(view.locate()).times(-1);
-            }
-            */
-        }
-
-        PathFinder pf = new PathFinder(botCom);
-        try {
-            view.move(pf.directionTo(toMove, view, false));
-        } catch (FullFieldException | FieldUnreachableException e) {
-            //Worst Case no good possible Move
-            view.move(XY.ZERO_ZERO);
-        }
-
     }
 }

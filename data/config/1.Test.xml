@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:gameConfig xmlns:ns2="game_config">
     <board_config>
-        <badBeastCount>5</badBeastCount>
+        <badBeastCount>40</badBeastCount>
         <badPlantCount>40</badPlantCount>
         <boardName>random</boardName>
         <entities>BadBeast</entities>
@@ -15,7 +15,7 @@
         <width>81</width>
     </board_config>
     <board_config>
-        <badBeastCount>5</badBeastCount>
+        <badBeastCount>40</badBeastCount>
         <badPlantCount>40</badPlantCount>
         <boardName>random</boardName>
         <entities>BadBeast</entities>
@@ -29,7 +29,7 @@
         <width>81</width>
     </board_config>
     <board_config>
-        <badBeastCount>5</badBeastCount>
+        <badBeastCount>40</badBeastCount>
         <badPlantCount>40</badPlantCount>
         <boardName>random</boardName>
         <entities>BadBeast</entities>

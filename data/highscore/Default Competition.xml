@@ -5,7 +5,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>20196</points>
+            <points>1282484</points>
             <ranking>1</ranking>
         </score>
     </entry>
@@ -14,16 +14,16 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>13191</points>
+            <points>621920</points>
             <ranking>2</ranking>
         </score>
     </entry>
     <entry>
         <date>2017-06-24</date>
         <score>
-            <id>0</id>
+            <id>623</id>
             <name>ExCells26</name>
-            <points>11256</points>
+            <points>401139</points>
             <ranking>3</ranking>
         </score>
     </entry>
@@ -32,7 +32,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>5466</points>
+            <points>340221</points>
             <ranking>4</ranking>
         </score>
     </entry>
@@ -41,7 +41,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>3734</points>
+            <points>59026</points>
             <ranking>5</ranking>
         </score>
     </entry>
@@ -50,7 +50,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>3258</points>
+            <points>29725</points>
             <ranking>6</ranking>
         </score>
     </entry>
@@ -59,7 +59,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>1900</points>
+            <points>29111</points>
             <ranking>7</ranking>
         </score>
     </entry>
@@ -68,7 +68,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>1452</points>
+            <points>22371</points>
             <ranking>8</ranking>
         </score>
     </entry>
@@ -77,7 +77,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>1300</points>
+            <points>21057</points>
             <ranking>9</ranking>
         </score>
     </entry>
@@ -86,8 +86,8 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>1300</points>
-            <ranking>9</ranking>
+            <points>20196</points>
+            <ranking>10</ranking>
         </score>
     </entry>
     <maxEntries>10</maxEntries>

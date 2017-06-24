@@ -3,9 +3,12 @@ package ExCells26.Squirrel.Mini;
 
 import ExCells26.Helper.BotCom;
 import ExCells26.Helper.Cell;
-import ExCells26.Helper.Exceptions.*;
+import ExCells26.Helper.Exceptions.FieldUnreachableException;
+import ExCells26.Helper.Exceptions.FullFieldException;
+import ExCells26.Helper.Exceptions.NoTargetException;
 import ExCells26.Helper.PathFinder;
 import ExCells26.Helper.XYsupport;
+import ExCells26.Squirrel.SquirrelHelper;
 import de.hsa.games.fatsquirrel.Launcher;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
@@ -14,11 +17,9 @@ import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * Created by Shiroten on 15.06.2017.
- */
 public class ExCells26ReaperMini implements BotController {
 
     BotCom botCom;
@@ -34,8 +35,20 @@ public class ExCells26ReaperMini implements BotController {
         this.myCell.setMiniSquirrel(this);
     }
 
+    public void setMyCell(Cell myCell) {
+        this.myCell = myCell;
+    }
+
+    public void setGoToMaster() {
+        this.goToMaster = true;
+    }
+
     @Override
     public void nextStep(ControllerContext view) {
+        if (myCell != null) {
+            myCell.setLastFeedback(view.getRemainingSteps());
+        }
+
         if (view.getRemainingSteps() < 200) {
             goToMaster = true;
         }
@@ -55,80 +68,53 @@ public class ExCells26ReaperMini implements BotController {
 
         myCell.setLastFeedback(view.getRemainingSteps());
 
-        XY toMove = XYsupport.normalizedVector(myCell.getQuadrant().minus(view.locate()));
+        if (myCell != null) {
+            if (!myCell.isInside(view.locate(), botCom)) {
+                moveToTarget(view, myCell.getQuadrant(), false);
+                return;
+            }
+        }
+
+        XY positionOfNearestGoodies = null;
         try {
-            toMove = calculateTarget(view);
+            positionOfNearestGoodies = SquirrelHelper.findNextGoodies(view);
         } catch (NoTargetException e) {
-            //If no Goodies
+            logger.log(Level.WARNING, "NoTargetException of mini nextStep");
+        }
+        if (positionOfNearestGoodies != null) {
+            moveToTarget(view, positionOfNearestGoodies, false);
+            return;
+        } else {
             try {
-                toMove = runningCircle(view);
-            } catch (NoTargetException e1) {
-                //Run back to myCell middle
-                PathFinder pf = new PathFinder(botCom);
-                try {
-                    toMove = pf.directionTo(myCell.getQuadrant(), view, false);
-                } catch (FullFieldException e2) {
-                    try {
-                        myCell.setUsableCell(false);
-                        myCell = botCom.freeCell();
-                    } catch (FullGridException e3) {
-                        try {
-                            botCom.expand();
-                        } catch (NoConnectingNeighbourException e4) {
-                            //Bad Position
-                        }
-                    }
-
-                } catch (FieldUnreachableException e2) {
-
-                }
+                runningCircle(view);
+                return;
+            } catch (NoTargetException e) {
+                logger.log(Level.WARNING, "NoTargetException of mini nextStep/runningCircle");
             }
         }
-        if (!goToMaster) {
-            try {
-                if (view.isMine(view.locate().plus(toMove))) {
-                    view.doNothing();
-                    return;
-                }
-            } catch (OutOfViewException e) {
-                //Todo: add log
-            }
+    }
+
+    public void moveToTarget(ControllerContext view, XY target, boolean walkOnMaster) {
+        PathFinder pf = new PathFinder(botCom);
+        try {
+            view.move(pf.directionTo(target, view, walkOnMaster));
+        } catch (FullFieldException e) {
+            logger.log(Level.WARNING, "FullFieldException of mini nextStep");
+            logger.log(Level.WARNING, "Position: " + view.locate().toString());
+            logger.log(Level.WARNING, "Destination: " + target);
+        } catch (FieldUnreachableException e) {
+            logger.log(Level.WARNING, "FieldUnreachableException of mini nextStep");
+            logger.log(Level.WARNING, "Position: " + view.locate().toString());
+            logger.log(Level.WARNING, "Destination: " + target);
         }
-        view.move(toMove);
     }
 
-    public void setMyCell(Cell myCell) {
-        this.myCell = myCell;
-    }
-
-    public void setGoToMaster() {
-        this.goToMaster = true;
-    }
-
-    private XY runningCircle(ControllerContext view) throws NoTargetException {
+    private void runningCircle(ControllerContext view) throws NoTargetException {
         PathFinder pf = new PathFinder(botCom);
         for (int i = 0; i < 8; i++) {
-            if (myCell == null){
-                try {
-                    myCell = botCom.freeCell();
-                } catch (FullGridException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                if (view.locate().equals(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)))) {
-                    cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
-                }
-            } catch (Exception e) {
-                //e.printStackTrace();
-            }
-            if (pf.isWalkable(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)), view)) {
-                try {
-                    return pf.directionTo(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)),
-                            view, false);
-                } catch (FullFieldException | FieldUnreachableException e) {
-                    cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
-                }
+            if (pf.isWalkable(cornerVector.times(botCom.getCellsize() / 4), view)) {
+                moveToTarget(view, cornerVector.times(botCom.getCellsize() / 4), false);
+                return;
             } else {
                 cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
             }
@@ -147,13 +133,7 @@ public class ExCells26ReaperMini implements BotController {
                 positionOfMaster = botCom.positionOfExCellMaster;
             }
         }
-        PathFinder pf = new PathFinder(botCom);
-        try {
-            view.move(pf.directionTo(positionOfMaster, view, false));
-        } catch (FullFieldException | FieldUnreachableException e) {
-            //Todo: add to Log
-            String s = "executeGoToMaster Error";
-        }
+        moveToTarget(view, positionOfMaster, true);
     }
 
     protected XY getAccuratePositionOfMaster(ControllerContext view) throws NoTargetException {
@@ -167,79 +147,10 @@ public class ExCells26ReaperMini implements BotController {
                         return new XY(i, j);
                     }
                 } catch (OutOfViewException e) {
-                    //Todo: add to Log
-                    //e.printStackTrace();
+                    logger.log(Level.WARNING, "OutOfViewException of mini getAccuratePositionOfMaster");
                 }
             }
         }
         throw new NoTargetException();
     }
-
-    protected XY calculateTarget(ControllerContext view) throws NoTargetException {
-        unReachableGoodies.clear();
-        XY positionOfGoodTarget;
-        XY toMove;
-        PathFinder pf = new PathFinder(botCom);
-
-        //numberOfTries can be incremented if needed
-        int numberOfTries = 10;
-        for (int i = 0; i < numberOfTries; i++) {
-            positionOfGoodTarget = findNextGoodies(view);
-            try {
-                toMove = pf.directionTo(positionOfGoodTarget, view, false);
-                return toMove;
-            } catch (FullFieldException | FieldUnreachableException e) {
-                unReachableGoodies.add(positionOfGoodTarget);
-            }
-        }
-        //Todo: add to Log
-        System.out.println("calculateTarget Error");
-        throw new NoTargetException();
-    }
-
-    private XY findNextGoodies(ControllerContext view) throws NoTargetException {
-        XY positionOfTentativelyTarget = new XY(999, 999);
-        for (int j = view.getViewUpperLeft().y; j < view.getViewLowerRight().y; j++) {
-            for (int i = view.getViewUpperLeft().x; i < view.getViewLowerRight().x; i++) {
-
-                if (unReachableGoodies.contains(new XY(i, j))) {
-                    continue;
-                }
-
-                if (myCell != null) {
-                    if (!myCell.isInside(new XY(i, j), botCom)) {
-                        continue;
-                    }
-                }
-
-                if (!isGoodTargetAt(view, new XY(i, j))) {
-                    continue;
-                }
-                if (new XY(i, j).minus(view.locate()).length() < positionOfTentativelyTarget.minus(view.locate()).length()) {
-                    positionOfTentativelyTarget = new XY(i, j);
-                }
-            }
-        }
-        if (positionOfTentativelyTarget.length() > 1000) {
-            throw new NoTargetException();
-        }
-        return positionOfTentativelyTarget;
-    }
-
-    private boolean isGoodTargetAt(ControllerContext view, XY position) {
-        try {
-            if (view.getEntityAt(position) == EntityType.GOOD_BEAST ||
-                    view.getEntityAt(position) == EntityType.GOOD_PLANT) {
-                return true;
-            }
-            if (view.getEntityAt(position) == EntityType.MINI_SQUIRREL && view.isMine(position)) {
-                return false;
-            }
-        } catch (OutOfViewException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
 }

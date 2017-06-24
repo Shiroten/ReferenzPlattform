@@ -86,6 +86,7 @@ public class ExCells26ReaperMini implements BotController {
             try {
                 if (view.isMine(view.locate().plus(toMove))) {
                     view.doNothing();
+                    return;
                 }
             } catch (OutOfViewException e) {
                 //Todo: add log

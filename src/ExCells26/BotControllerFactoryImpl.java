@@ -1,6 +1,5 @@
 package ExCells26;
 
-
 import ExCells26.Helper.BotCom;
 import ExCells26.Squirrel.ExCells26Master;
 import ExCells26.Squirrel.Mini.ExCells26FeralMini;

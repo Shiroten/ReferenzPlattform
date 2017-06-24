@@ -1,10 +1,11 @@
 package ExCells26.Squirrel.Mini;
 
 
-import ExCells26.Helper.*;
-import ExCells26.Helper.Exceptions.FieldUnreachableException;
-import ExCells26.Helper.Exceptions.FullFieldException;
-import ExCells26.Helper.Exceptions.NoTargetException;
+import ExCells26.Helper.BotCom;
+import ExCells26.Helper.Cell;
+import ExCells26.Helper.Exceptions.*;
+import ExCells26.Helper.PathFinder;
+import ExCells26.Helper.XYsupport;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
@@ -50,7 +51,6 @@ public class ExCells26ReaperMini implements BotController {
             goToMaster = true;
         }
 
-
         myCell.setLastFeedback(view.getRemainingSteps());
 
 
@@ -68,8 +68,17 @@ public class ExCells26ReaperMini implements BotController {
                 try {
                     toMove = pf.directionTo(view.locate(), myCell.getQuadrant(), view);
                 } catch (FullFieldException e2) {
-                    //Todo: add To Log
-                    //e2.printStackTrace();
+                    try {
+                        myCell.setUsableCell(false);
+                        myCell = botCom.freeCell();
+                    } catch (FullGridException e3) {
+                        try {
+                            botCom.expand();
+                        } catch (NoConnectingNeighbourException e4) {
+                            //Bad Position
+                        }
+                    }
+
                 } catch (FieldUnreachableException e2) {
 
                 }
@@ -98,8 +107,13 @@ public class ExCells26ReaperMini implements BotController {
     private XY runningCircle(ControllerContext view) throws NoTargetException {
         PathFinder pf = new PathFinder(botCom);
         for (int i = 0; i < 8; i++) {
-            if (view.locate().equals(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)))) {
-                cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
+            try {
+                if (view.locate().equals(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)))) {
+                    cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
+                }
+            } catch (Exception e) {
+                System.out.println(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)));
+                //e.printStackTrace();
             }
             if (pf.isWalkable(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)), view)) {
                 try {
@@ -175,10 +189,9 @@ public class ExCells26ReaperMini implements BotController {
         //Todo: add to Log
         System.out.println("calculateTarget Error");
         throw new NoTargetException();
-
     }
 
-    protected XY findNextGoodies(ControllerContext view) throws NoTargetException {
+    private XY findNextGoodies(ControllerContext view) throws NoTargetException {
         XY positionOfTentativelyTarget = new XY(999, 999);
         for (int j = view.getViewUpperLeft().y; j < view.getViewLowerRight().y; j++) {
             for (int i = view.getViewUpperLeft().x; i < view.getViewLowerRight().x; i++) {
@@ -207,7 +220,7 @@ public class ExCells26ReaperMini implements BotController {
         return positionOfTentativelyTarget;
     }
 
-    protected boolean isGoodTargetAt(ControllerContext view, XY position) {
+    private boolean isGoodTargetAt(ControllerContext view, XY position) {
         try {
             if (view.getEntityAt(position) == EntityType.GOOD_BEAST ||
                     view.getEntityAt(position) == EntityType.GOOD_PLANT) {
@@ -221,5 +234,6 @@ public class ExCells26ReaperMini implements BotController {
         }
         return false;
     }
+
 
 }

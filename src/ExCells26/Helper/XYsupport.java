@@ -45,8 +45,14 @@ public class XYsupport {
     }
 
     public static boolean isInRange(XY middle, XY upperLeftEnd, XY lowerRightEnd) {
-        return middle.x <= lowerRightEnd.x && middle.x >= upperLeftEnd.x
-                && middle.y <= lowerRightEnd.y && middle.y >= upperLeftEnd.y;
+        try {
+            return middle.x <= lowerRightEnd.x && middle.x >= upperLeftEnd.x
+                    && middle.y <= lowerRightEnd.y && middle.y >= upperLeftEnd.y;
+        } catch (Exception e){
+            System.out.println(middle.x);
+            System.out.println(middle.y);
+        }
+        return false;
     }
 
     private static int randomWithRange(int min, int max) {

@@ -84,8 +84,8 @@ public class PathFinder {
                 continue;
 
             //default = 5
-            int distanceWeight = 100;
-            int nodeWeightMultiplier = 100;
+            int distanceWeight = 10;
+            int nodeWeightMultiplier = 1000;
             //Magic happens here
             double tentativeFx = XYsupport.distanceInSteps(successor.getCoordinate(), destination) * distanceWeight
                     + nodeWeightMultiplier * nodeWeight(successor.getCoordinate());
@@ -182,7 +182,7 @@ public class PathFinder {
                 case GOOD_PLANT:
                     return -100 + checkAdjacentBadBeast(position);
                 case NONE:
-                    return checkAdjacentBadBeast(position) + 10;
+                    return checkAdjacentBadBeast(position) + 20;
             }
         } catch (OutOfViewException e) {
             return 0;

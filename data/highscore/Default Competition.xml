@@ -5,7 +5,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>1000</points>
+            <points>1452</points>
             <ranking>1</ranking>
         </score>
     </entry>
@@ -15,24 +15,33 @@
             <id>0</id>
             <name>ExCells26</name>
             <points>1000</points>
-            <ranking>1</ranking>
-        </score>
-    </entry>
-    <entry>
-        <date>2017-06-24</date>
-        <score>
-            <id>0</id>
-            <name>ExCells26</name>
-            <points>976</points>
             <ranking>2</ranking>
         </score>
     </entry>
     <entry>
-        <date>2017-06-23</date>
+        <date>2017-06-24</date>
         <score>
             <id>0</id>
-            <name>pizzaBot</name>
-            <points>796</points>
+            <name>ExCells26</name>
+            <points>1000</points>
+            <ranking>2</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>1000</points>
+            <ranking>2</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>995</points>
             <ranking>3</ranking>
         </score>
     </entry>
@@ -41,7 +50,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>779</points>
+            <points>976</points>
             <ranking>4</ranking>
         </score>
     </entry>
@@ -50,16 +59,16 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>596</points>
+            <points>872</points>
             <ranking>5</ranking>
         </score>
     </entry>
     <entry>
         <date>2017-06-24</date>
         <score>
-            <id>0</id>
+            <id>1395</id>
             <name>ExCells26</name>
-            <points>475</points>
+            <points>844</points>
             <ranking>6</ranking>
         </score>
     </entry>
@@ -68,26 +77,17 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>467</points>
+            <points>844</points>
+            <ranking>6</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-23</date>
+        <score>
+            <id>0</id>
+            <name>pizzaBot</name>
+            <points>796</points>
             <ranking>7</ranking>
-        </score>
-    </entry>
-    <entry>
-        <date>2017-06-24</date>
-        <score>
-            <id>0</id>
-            <name>ExCells26</name>
-            <points>300</points>
-            <ranking>8</ranking>
-        </score>
-    </entry>
-    <entry>
-        <date>2017-06-24</date>
-        <score>
-            <id>0</id>
-            <name>ExCells26</name>
-            <points>299</points>
-            <ranking>9</ranking>
         </score>
     </entry>
     <maxEntries>10</maxEntries>

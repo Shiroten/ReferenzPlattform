@@ -2,7 +2,9 @@ package ExCells26.Helper;
 
 
 
-import ExCells26.ExCells26Master;
+import ExCells26.Squirrel.ExCells26Master;
+import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
+import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.utilities.XY;
 import org.junit.Test;
 
@@ -25,7 +27,7 @@ public class BotComTest {
     }
 
     @Test
-    public void getAllCellsTest(){
+    public void getAllCellsTest(ControllerContext view){
         BotCom botCom = new BotCom();
         botCom.setFieldLimit(new XY(80, 60));
 
@@ -46,7 +48,7 @@ public class BotComTest {
         ExCells26Master master = new ExCells26Master(botCom);
         botCom.setMaster(master);
         botCom.startPositionOfMaster = new XY(66, 55);
-        botCom.init();
+        //botCom.init();
         try {
             for (int i = 0; i < 20; i++) {
                 botCom.expand();
@@ -88,7 +90,7 @@ public class BotComTest {
         BotCom botCom = new BotCom();
         botCom.setFieldLimit(new XY(80, 60));
         botCom.calculateCellSize();
-        botCom.getAllCells();
+        //botCom.getAllCells();
 
 
         System.out.println(botCom.cellDistanceX + " " + botCom.cellDistanceY);

@@ -1,4 +1,4 @@
-package ExCells26.Mini;
+package ExCells26.Squirrel.Mini;
 
 import ExCells26.Helper.BotCom;
 import ExCells26.Helper.Cell;

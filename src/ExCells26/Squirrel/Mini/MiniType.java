@@ -1,4 +1,4 @@
-package ExCells26.Mini;
+package ExCells26.Squirrel.Mini;
 
 public enum MiniType {
     FERAL(100), RECON(100), REAPER(200), NONE(0);

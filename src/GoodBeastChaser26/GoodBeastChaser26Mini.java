@@ -1,7 +1,10 @@
-package ExCells26.Mini;
+package GoodBeastChaser26;
 
 
-import ExCells26.Helper.*;
+import GoodBeastChaser26.Helper.*;
+import GoodBeastChaser26.Helper.Exceptions.FieldUnreachableException;
+import GoodBeastChaser26.Helper.Exceptions.FullFieldException;
+import GoodBeastChaser26.Helper.Exceptions.NoTargetException;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
@@ -13,16 +16,16 @@ import java.util.ArrayList;
 /**
  * Created by Shiroten on 15.06.2017.
  */
-public class ExCells26ReaperMini implements BotController {
+public class GoodBeastChaser26Mini implements BotController {
 
-    protected BotCom botCom;
-    protected Cell myCell;
+    BotCom botCom;
+    private Cell myCell;
 
-    protected ArrayList<XY> unReachableGoodies = new ArrayList<>();
+    ArrayList<XY> unReachableGoodies = new ArrayList<>();
     private XY cornerVector = XY.UP;
-    protected boolean goToMaster = false;
+    boolean goToMaster = false;
 
-    public ExCells26ReaperMini(BotCom botCom) {
+    public GoodBeastChaser26Mini(BotCom botCom) {
         this.botCom = botCom;
         this.myCell = botCom.getCellForNextMini();
         this.myCell.setMiniSquirrel(this);
@@ -86,8 +89,8 @@ public class ExCells26ReaperMini implements BotController {
         this.myCell = myCell;
     }
 
-    public void setGoToMaster(boolean goToMaster) {
-        this.goToMaster = goToMaster;
+    public void setGoToMaster() {
+        this.goToMaster = true;
     }
 
     private XY runningCircle(ControllerContext view) throws NoTargetException {
@@ -182,7 +185,7 @@ public class ExCells26ReaperMini implements BotController {
                     continue;
                 }
 
-                if (!(this instanceof ExCells26FeralMini)) {
+                if (myCell != null) {
                     if (!myCell.isInside(new XY(i, j), botCom)) {
                         continue;
                     }

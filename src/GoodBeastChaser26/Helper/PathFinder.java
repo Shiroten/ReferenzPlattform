@@ -1,13 +1,14 @@
-package ExCells26.Helper;
+package GoodBeastChaser26.Helper;
 
-import ExCells26.Helper.Exceptions.FieldUnreachableException;
-import ExCells26.Helper.Exceptions.FullFieldException;
+import GoodBeastChaser26.Helper.Exceptions.FieldUnreachableException;
+import GoodBeastChaser26.Helper.Exceptions.FullFieldException;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**

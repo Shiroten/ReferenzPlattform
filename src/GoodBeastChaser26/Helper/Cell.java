@@ -1,7 +1,9 @@
-package ExCells26.Helper;
+package GoodBeastChaser26.Helper;
 
 
-import ExCells26.Squirrel.Mini.ExCells26ReaperMini;
+import ExCells26.Mini.ExCells26ReaperMini;
+import GoodBeastChaser26.GoodBeastChaser26Master;
+import GoodBeastChaser26.GoodBeastChaser26Mini;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.Hashtable;
@@ -13,7 +15,7 @@ public class Cell {
 
     private XY quadrant;
     private long lastFeedback;
-    private ExCells26ReaperMini miniSquirrel;
+    private GoodBeastChaser26Mini miniSquirrel;
     private boolean isActive = false;
     private boolean usableCell = true;
 
@@ -60,11 +62,11 @@ public class Cell {
         this.lastFeedback = lastFeedback;
     }
 
-    public ExCells26ReaperMini getMiniSquirrel() {
+    public GoodBeastChaser26Mini getMiniSquirrel() {
         return miniSquirrel;
     }
 
-    public void setMiniSquirrel(ExCells26ReaperMini miniSquirrel) {
+    public void setMiniSquirrel(GoodBeastChaser26Mini miniSquirrel) {
         this.miniSquirrel = miniSquirrel;
     }
 

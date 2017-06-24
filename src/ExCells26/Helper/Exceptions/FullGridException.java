@@ -1,4 +1,4 @@
-package ExCells26.Helper;
+package ExCells26.Helper.Exceptions;
 
 /**
  * Created by Shiroten on 15.06.2017.

@@ -1,9 +1,10 @@
-package ExCells26;
+package GoodBeastChaser26;
 
-
-import ExCells26.Helper.*;
-import ExCells26.Mini.ExCells26ReaperMini;
 import ExCells26.Mini.MiniType;
+import GoodBeastChaser26.Helper.*;
+import GoodBeastChaser26.Helper.Exceptions.FieldUnreachableException;
+import GoodBeastChaser26.Helper.Exceptions.FullFieldException;
+import GoodBeastChaser26.Helper.Exceptions.NoConnectingNeighbourException;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.actions.SpawnException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
@@ -11,17 +12,17 @@ import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
-public class ExCells26Master implements BotController {
+public class GoodBeastChaser26Master implements BotController {
 
     private BotCom botCom;
     private Cell currentCell;
     private boolean firstCall = true;
     private ControllerContext view;
-    private ExCells26ReaperMini miniOfCurrentCell;
+    private GoodBeastChaser26Mini miniOfCurrentCell;
     private boolean firstTimeInCell = true;
     private int waitCycleForFeral = 5;
 
-    public ExCells26Master(BotCom botCom) {
+    public GoodBeastChaser26Master(BotCom botCom) {
         this.botCom = botCom;
     }
 
@@ -44,7 +45,6 @@ public class ExCells26Master implements BotController {
         }
 
         if (currentCell.isInside(view.locate(), botCom) && firstTimeInCell) {
-            collectMiniOfCell();
             return;
         }
 
@@ -89,16 +89,6 @@ public class ExCells26Master implements BotController {
         }
         spawningReaper(toCheck);
         changeCurrentCell();
-    }
-
-    private void collectMiniOfCell() {
-        firstTimeInCell = false;
-        if (currentCell.getMiniSquirrel() != null) {
-            miniOfCurrentCell = currentCell.getMiniSquirrel();
-            miniOfCurrentCell.setMyCell(null);
-            miniOfCurrentCell.setGoToMaster(true);
-            //currentCell.setMiniSquirrel(null);
-        }
     }
 
     private void changeCurrentCell() {

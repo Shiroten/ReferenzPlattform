@@ -1,30 +1,93 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:leaderboard xmlns:ns2="leaderboard">
     <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>1000</points>
+            <ranking>1</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>1000</points>
+            <ranking>1</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>976</points>
+            <ranking>2</ranking>
+        </score>
+    </entry>
+    <entry>
         <date>2017-06-23</date>
         <score>
             <id>0</id>
             <name>pizzaBot</name>
             <points>796</points>
-            <ranking>1</ranking>
+            <ranking>3</ranking>
         </score>
     </entry>
     <entry>
-        <date>2017-06-23</date>
+        <date>2017-06-24</date>
         <score>
-            <id>1</id>
-            <name>moneyBot</name>
-            <points>0</points>
-            <ranking>2</ranking>
-        </score>
-    </entry>
-    <entry>
-        <date>2017-06-23</date>
-        <score>
-            <id>2</id>
+            <id>0</id>
             <name>ExCells26</name>
-            <points>0</points>
-            <ranking>2</ranking>
+            <points>779</points>
+            <ranking>4</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>596</points>
+            <ranking>5</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>475</points>
+            <ranking>6</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>467</points>
+            <ranking>7</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>300</points>
+            <ranking>8</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>299</points>
+            <ranking>9</ranking>
         </score>
     </entry>
     <maxEntries>10</maxEntries>

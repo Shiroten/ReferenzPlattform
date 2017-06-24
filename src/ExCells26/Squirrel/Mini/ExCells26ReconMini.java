@@ -1,7 +1,11 @@
-package ExCells26.Mini;
+package ExCells26.Squirrel.Mini;
 
 
 import ExCells26.Helper.*;
+import ExCells26.Helper.Exceptions.FieldUnreachableException;
+import ExCells26.Helper.Exceptions.FullFieldException;
+import ExCells26.Helper.Exceptions.FullGridException;
+import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.utilities.XY;

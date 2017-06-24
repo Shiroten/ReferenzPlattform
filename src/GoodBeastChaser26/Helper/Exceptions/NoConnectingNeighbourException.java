@@ -1,4 +1,4 @@
-package ExCells26.Helper;
+package GoodBeastChaser26.Helper.Exceptions;
 
 /**
  * Created by Shiroten on 17.06.2017.

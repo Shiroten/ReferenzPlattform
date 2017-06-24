@@ -1,10 +1,10 @@
-package ExCells26.Helper;
+package GoodBeastChaser26.Helper;
 
 
-import ExCells26.Squirrel.ExCells26Master;
-import ExCells26.Helper.Exceptions.FullGridException;
-import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
-import ExCells26.Squirrel.Mini.MiniType;
+import ExCells26.Mini.MiniType;
+import GoodBeastChaser26.GoodBeastChaser26Master;
+import GoodBeastChaser26.Helper.Exceptions.FullGridException;
+import GoodBeastChaser26.Helper.Exceptions.NoConnectingNeighbourException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
@@ -16,7 +16,7 @@ import java.util.Hashtable;
  */
 public class BotCom {
 
-    private ExCells26Master master;
+    private GoodBeastChaser26Master master;
 
     Hashtable<XY, Cell> getGrid() {
         return grid;
@@ -32,15 +32,15 @@ public class BotCom {
     public XY positionOfExCellMaster;
 
     //Default: 21 (last working number)
-    int cellDistanceX = 21;
-    int cellDistanceY = 21;
+    int cellDistanceX = 7;
+    int cellDistanceY = 7;
 
     //Default: 11 (last working number)
-    private int cellCenterOffsetX = 10;
-    private int cellCenterOffsetY = 10;
+    private int cellCenterOffsetX = 3;
+    private int cellCenterOffsetY = 3;
 
     //Default: 21 (last working number)
-    private int cellsize = 21;
+    private int cellsize = 15;
 
     public int getCellDistanceX() {
         return cellDistanceX;
@@ -54,7 +54,7 @@ public class BotCom {
         return master;
     }
 
-    public void setMaster(ExCells26Master master) {
+    public void setMaster(GoodBeastChaser26Master master) {
         this.master = master;
     }
 
@@ -229,9 +229,6 @@ public class BotCom {
     public Cell freeCell() throws FullGridException {
         for (Cell c : grid.values()) {
             if (!c.isActive()) {
-                continue;
-            }
-            if (!c.isUsableCell()){
                 continue;
             }
             if (c.getMiniSquirrel() == null)

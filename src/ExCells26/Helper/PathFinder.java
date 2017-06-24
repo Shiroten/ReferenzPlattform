@@ -18,6 +18,7 @@ public class PathFinder {
     private List<Node> closedList;
     private ControllerContext context;
     private BotCom botCom;
+    private XY start, destination;
 
     public PathFinder(BotCom botCom) {
         this.botCom = botCom;
@@ -28,12 +29,16 @@ public class PathFinder {
         private final XY coordinate;
         private double fx;
         private Node predecessor;
+        private boolean isInSight;
 
-        Node(XY coordinate) {
+        private int destinationDistance;
+
+        Node(XY coordinate, boolean isInSight) {
             this.coordinate = coordinate;
+            this.isInSight = isInSight;
         }
 
-        public XY getCoordinate() {
+        XY getCoordinate() {
             return coordinate;
         }
 
@@ -52,44 +57,74 @@ public class PathFinder {
         void setPredecessor(Node predecessor) {
             this.predecessor = predecessor;
         }
+
+        public boolean isInSight() {
+            return isInSight;
+        }
+
+        public int getDestinationDistance() {
+            return destinationDistance;
+        }
+
+        public void setDestinationDistance(int destinationDistance) {
+            this.destinationDistance = destinationDistance;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof Node && coordinate.equals(((Node) o).getCoordinate());
+        }
+
+        @Override
+        public String toString(){
+            return ""+coordinate + " F(x):" +fx + "In sight: " + isInSight;
+        }
     }
 
     public XY directionTo(XY from, XY destination, ControllerContext context) throws FullFieldException, FieldUnreachableException {
         openList = new ArrayList<>();
         closedList = new ArrayList<>();
+        start = from;
+        this.destination = destination;
 
-        openList.add(new Node(from));
+        openList.add(new Node(from, true));
         this.context = context;
 
         if (!isWalkable(destination, context))
             throw new FullFieldException();
 
+        System.out.println("Start: " + from + " bis: " + destination);
+        System.out.println("Anzahl in Schritten: " + XYsupport.distanceInSteps(from, destination));
         while (!openList.isEmpty()) {
             Node currentNode = popMinF(openList);
             if (currentNode.getCoordinate().equals(destination)) {
-                //System.out.println(closedList.size());
+                System.out.println("Knoten untersucht: " +closedList.size());
                 return getSecondNode(currentNode).coordinate.minus(from);
             }
+            if(!currentNode.isInSight)
+                return getSecondNode(currentNode).coordinate.minus(from);
 
             closedList.add(currentNode);
-            expandNode(currentNode, destination);
+            expandNode(currentNode);
         }
         throw new FieldUnreachableException();
     }
 
-    private void expandNode(Node currentNode, XY destination) {
+    private void expandNode(Node currentNode) {
         for (XY xy : XYsupport.directions()) {
-            Node successor = new Node(currentNode.getCoordinate().plus(xy));
-            if (containsPosition(closedList, successor.coordinate) != 0 || !isWalkable(successor.getCoordinate(), context))
+            XY succXy = currentNode.getCoordinate().plus(xy);
+            Node successor = new Node(succXy, XYsupport.isInRange(succXy, context.getViewUpperLeft(), context.getViewLowerRight()));
+            if (closedList.contains(successor) || !isWalkable(successor.getCoordinate(), context) || openList.contains(successor))
                 continue;
 
             //default = 5
-            int distanceWeight = 10;
-            int nodeWeightMultiplier = 1000;
+            int distanceWeight = 1;
+            int nodeWeightMultiplier = 1;
             //Magic happens here
-            double tentativeFx = XYsupport.distanceInSteps(successor.getCoordinate(), destination) * distanceWeight
-                    + nodeWeightMultiplier * nodeWeight(successor.getCoordinate());
+            double tentativeFx = XYsupport.distanceInSteps(start, succXy) * distanceWeight
+                    + nodeWeightMultiplier * nodeWeight(successor.getCoordinate()) + currentNode.getFx();
             successor.setFx(tentativeFx);
+            successor.setDestinationDistance(XYsupport.distanceInSteps(succXy, destination));
 
             int position = containsPosition(openList, successor.coordinate);
             if (position != 0) {
@@ -144,8 +179,17 @@ public class PathFinder {
         for (Node n : openList) {
             if (min == null)
                 min = n;
-            else if (n.getFx() < min.getFx())
-                min = n;
+            else if (n.isInSight()) {
+                if (n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance())
+                    min = n;
+                else if(n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance()
+                        && XYsupport.distanceInSteps(start, n.getCoordinate()) <= XYsupport.distanceInSteps(start, min.getCoordinate()))
+                    min = n;
+            }
+            else if(!n.isInSight())
+                if(n.getFx() + n.getDestinationDistance() < min.getFx() + min.getDestinationDistance())
+                    min = n;
+
         }
         openList.remove(min);
 

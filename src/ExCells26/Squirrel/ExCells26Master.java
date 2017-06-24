@@ -31,7 +31,6 @@ public class ExCells26Master implements BotController {
     private boolean firstTimeInCell = true;
     private int fleeing = 0;
     private boolean fullField = false;
-    private int test = 10;
 
     public ExCells26Master(BotCom botCom) {
         this.botCom = botCom;
@@ -53,14 +52,9 @@ public class ExCells26Master implements BotController {
         if (currentCell.getQuadrant().minus(view.locate()).length() < 5.7) {
             spawningReaper(currentCell);
             changeCurrentCell();
+        } else {
+            moveToCurrentCell();
         }
-        if (test % 10 == 1){
-            spawningReaper(currentCell);
-            changeCurrentCell();
-            test++;
-        }
-
-        moveToCurrentCell();
     }
 
     public void nextStep2(ControllerContext view) {

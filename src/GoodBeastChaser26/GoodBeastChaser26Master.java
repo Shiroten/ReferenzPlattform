@@ -1,6 +1,6 @@
 package GoodBeastChaser26;
 
-import ExCells26.Mini.MiniType;
+import ExCells26.Squirrel.Mini.MiniType;
 import GoodBeastChaser26.Helper.*;
 import GoodBeastChaser26.Helper.Exceptions.FieldUnreachableException;
 import GoodBeastChaser26.Helper.Exceptions.FullFieldException;

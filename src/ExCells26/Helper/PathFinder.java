@@ -81,28 +81,25 @@ public class PathFinder {
         }
     }
 
-    public XY directionTo(XY from, XY destination, ControllerContext context) throws FullFieldException, FieldUnreachableException {
+    public XY directionTo(XY destination, ControllerContext context, boolean walkOnMaster) throws FullFieldException, FieldUnreachableException {
         openList = new ArrayList<>();
         closedList = new ArrayList<>();
-        start = from;
+        start = context.locate();
         this.destination = destination;
 
-        openList.add(new Node(from, true));
+        openList.add(new Node(start, true));
         this.context = context;
 
         if (!isWalkable(destination, context))
             throw new FullFieldException();
 
-        System.out.println("Start: " + from + " bis: " + destination);
-        System.out.println("Anzahl in Schritten: " + XYsupport.distanceInSteps(from, destination));
         while (!openList.isEmpty()) {
             Node currentNode = popMinF(openList);
             if (currentNode.getCoordinate().equals(destination)) {
-                System.out.println("Knoten untersucht: " +closedList.size());
-                return getSecondNode(currentNode).coordinate.minus(from);
+                return getSecondNode(currentNode).coordinate.minus(start);
             }
             if(!currentNode.isInSight)
-                return getSecondNode(currentNode).coordinate.minus(from);
+                return getSecondNode(currentNode).coordinate.minus(start);
 
             closedList.add(currentNode);
             expandNode(currentNode);

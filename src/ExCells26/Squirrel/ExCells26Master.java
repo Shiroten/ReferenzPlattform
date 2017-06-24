@@ -57,83 +57,6 @@ public class ExCells26Master implements BotController {
         }
     }
 
-    public void nextStep2(ControllerContext view) {
-        Logger logger2 = Logger.getLogger(Launcher.class.getName());
-        logger2.log(Level.FINE, "Starting NextStep");
-
-        toDoAtStartOfNextStep(view);
-        if (firstCall) {
-            initOfMaster(view);
-        }
-
-        XY positionOfNextBadBeast;
-        try {
-            positionOfNextBadBeast = SquirrelHelper.findNextBadBeast(view);
-        } catch (NoTargetException e) {
-            positionOfNextBadBeast = new XY(999, 999);
-        }
-
-        if (fleeing > 0) {
-            //Move away from BadBeast to safely execute the rest of the implementation
-            XY toMove = null;
-            try {
-                toMove = SquirrelHelper.safeField(view);
-            } catch (NoTargetException e) {
-                Logger logger = Logger.getLogger(Launcher.class.getName());
-                logger.log(Level.FINE, e.getMessage());
-            }
-
-            PathFinder pf = new PathFinder(botCom);
-            try {
-                view.move(pf.directionTo(view.locate(), toMove, view));
-            } catch (FullFieldException e) {
-                currentCell.setUsableCell(false);
-                changeCurrentCell();
-            } catch (FieldUnreachableException e) {
-                changeCurrentCell();
-            }
-            fleeing--;
-        }
-
-        if (positionOfNextBadBeast.minus(view.locate()).length() < 2.9) {
-            fleeing = 10;
-            changeCurrentCell();
-        } else {
-            if (view.getEnergy() > 500) {
-                spawnMoreMinis();
-            }
-
-            if (view.getRemainingSteps() < 100) {
-                collectingReapers();
-                return;
-            }
-
-            if (currentCell.isInside(view.locate(), botCom) && firstTimeInCell) {
-                collectMiniOfCell();
-                return;
-            }
-
-            if (currentCell.getQuadrant().equals(view.locate()) && !firstTimeInCell) {
-                try {
-                    botCom.expand();
-                    if (view.getEnergy() >= 100) {
-                        if (currentCell.getMiniSquirrel() == null) {
-                            spawningReaper(currentCell);
-                        }
-                    } else {
-                        //maybe something better
-                        changeCurrentCell();
-                    }
-                } catch (NoConnectingNeighbourException e) {
-                    Logger logger = Logger.getLogger(Launcher.class.getName());
-                    logger.log(Level.FINE, e.getMessage());
-                }
-                changeCurrentCell();
-            }
-            moveToCurrentCell();
-        }
-    }
-
     private void spawnMoreMinis() {
         Cell start = currentCell;
         Cell toCheck = start;
@@ -202,7 +125,7 @@ public class ExCells26Master implements BotController {
         PathFinder pf = new PathFinder(botCom);
         XY betterMove = XY.ZERO_ZERO;
         try {
-            betterMove = pf.directionTo(view.locate(), currentCell.getQuadrant(), view);
+            betterMove = pf.directionTo(currentCell.getQuadrant(), view, false);
         } catch (FullFieldException e) {
             Logger logger = Logger.getLogger(Launcher.class.getName());
             logger.log(Level.WARNING, "FullFieldException");
@@ -222,7 +145,7 @@ public class ExCells26Master implements BotController {
         PathFinder pf = new PathFinder(botCom);
         XY toMove = XY.ZERO_ZERO;
         try {
-            toMove = pf.directionTo(view.locate(), middle, view);
+            toMove = pf.directionTo(middle, view, false);
         } catch (FullFieldException e) {
             //Todo: add to Log
             //e.printStackTrace();

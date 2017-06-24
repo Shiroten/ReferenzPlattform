@@ -1,7 +1,8 @@
 package GoodBeastChaser26.Helper;
 
 
-import ExCells26.Mini.MiniType;
+
+import ExCells26.Squirrel.Mini.MiniType;
 import GoodBeastChaser26.GoodBeastChaser26Master;
 import GoodBeastChaser26.Helper.Exceptions.FullGridException;
 import GoodBeastChaser26.Helper.Exceptions.NoConnectingNeighbourException;

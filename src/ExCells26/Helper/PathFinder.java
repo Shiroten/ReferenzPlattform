@@ -58,15 +58,15 @@ public class PathFinder {
             this.predecessor = predecessor;
         }
 
-        public boolean isInSight() {
+        boolean isInSight() {
             return isInSight;
         }
 
-        public int getDestinationDistance() {
+        int getDestinationDistance() {
             return destinationDistance;
         }
 
-        public void setDestinationDistance(int destinationDistance) {
+        void setDestinationDistance(int destinationDistance) {
             this.destinationDistance = destinationDistance;
         }
 

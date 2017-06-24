@@ -109,7 +109,7 @@ public class SquirrelHelper {
         for (int multiplier = 0; multiplier < 10; multiplier++) {
             for (XY vector : XYsupport.directions()) {
                 try {
-                    pathFinder.directionTo(view.locate(), centrum.plus(vector.times(multiplier)), view);
+                    pathFinder.directionTo(centrum.plus(vector.times(multiplier)), view, false);
                     return centrum.plus(vector.times(multiplier));
                 } catch (FullFieldException | FieldUnreachableException e) {
                 }

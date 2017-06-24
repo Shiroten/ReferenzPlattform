@@ -28,15 +28,12 @@ public class ExCells26ReaperMini implements BotController {
     private XY cornerVector = XY.UP;
     boolean goToMaster = false;
     private Logger logger = Logger.getLogger(Launcher.class.getName());
+    private Cell linkList;
+    private boolean init = true;
 
     public ExCells26ReaperMini(BotCom botCom) {
         this.botCom = botCom;
-        this.myCell = botCom.getCellForNextMini();
-        this.myCell.setMiniSquirrel(this);
-    }
-
-    public void setMyCell(Cell myCell) {
-        this.myCell = myCell;
+        this.linkList = botCom.getCellForNextMini();
     }
 
     public void setGoToMaster() {
@@ -45,9 +42,17 @@ public class ExCells26ReaperMini implements BotController {
 
     @Override
     public void nextStep(ControllerContext view) {
-        if (myCell != null) {
-            myCell.setLastFeedback(view.getRemainingSteps());
+        if (init) {
+            init(view);
         }
+
+        if (linkList != null) {
+            linkList.setLastFeedback(view.getRemainingSteps());
+        }
+        if (XYsupport.isGreater(view.getViewLowerRight(), botCom.getFieldLimit())) {
+            botCom.setFieldLimit(view.getViewLowerRight());
+        }
+        SquirrelHelper.checkRallyPoint(botCom, view.locate());
 
         if (view.getRemainingSteps() < 200) {
             goToMaster = true;
@@ -66,11 +71,11 @@ public class ExCells26ReaperMini implements BotController {
             goToMaster = true;
         }
 
-        myCell.setLastFeedback(view.getRemainingSteps());
+        linkList.setLastFeedback(view.getRemainingSteps());
 
-        if (myCell != null) {
-            if (!myCell.isInside(view.locate(), botCom)) {
-                moveToTarget(view, myCell.getQuadrant(), false);
+        if (linkList != null) {
+            if (!linkList.isInside(view.locate(), botCom)) {
+                moveToTarget(view, linkList.getQuadrant(), false);
                 return;
             }
         }
@@ -94,18 +99,22 @@ public class ExCells26ReaperMini implements BotController {
         }
     }
 
+    private void changeCell (){
+        linkList = linkList.getNextCell();
+    }
+
     public void moveToTarget(ControllerContext view, XY target, boolean walkOnMaster) {
         PathFinder pf = new PathFinder(botCom);
         try {
             view.move(pf.directionTo(target, view, walkOnMaster));
         } catch (FullFieldException e) {
-            logger.log(Level.WARNING, "FullFieldException of mini nextStep");
-            logger.log(Level.WARNING, "Position: " + view.locate().toString());
-            logger.log(Level.WARNING, "Destination: " + target);
+            logger.log(Level.FINER, "FullFieldException of mini nextStep");
+            logger.log(Level.FINER, "Position: " + view.locate().toString());
+            logger.log(Level.FINER, "Destination: " + target);
         } catch (FieldUnreachableException e) {
-            logger.log(Level.WARNING, "FieldUnreachableException of mini nextStep");
-            logger.log(Level.WARNING, "Position: " + view.locate().toString());
-            logger.log(Level.WARNING, "Destination: " + target);
+            logger.log(Level.FINER, "FieldUnreachableException of mini nextStep");
+            logger.log(Level.FINER, "Position: " + view.locate().toString());
+            logger.log(Level.FINER, "Destination: " + target);
         }
     }
 
@@ -152,5 +161,9 @@ public class ExCells26ReaperMini implements BotController {
             }
         }
         throw new NoTargetException();
+    }
+
+    private void init(ControllerContext view) {
+        linkList = botCom.getNextRallyPoint(view.locate());
     }
 }

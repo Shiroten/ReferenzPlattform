@@ -1,14 +1,11 @@
 package ExCells26.Helper;
 
 
-
 import ExCells26.Squirrel.ExCells26Master;
-import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
-import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.utilities.XY;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Shiroten on 17.06.2017.
@@ -27,7 +24,7 @@ public class BotComTest {
     }
 
     @Test
-    public void getAllCellsTest(ControllerContext view){
+    public void getAllCellsTest() {
         BotCom botCom = new BotCom();
         botCom.setFieldLimit(new XY(80, 60));
 
@@ -35,8 +32,7 @@ public class BotComTest {
         botCom.setMaster(master);
         botCom.startPositionOfMaster = new XY(66, 55);
 
-        botCom.getAllCells();
-        System.out.println(botCom.getGrid().size());
+        System.out.println(botCom.getGrid4().size());
     }
 
     @Test
@@ -48,16 +44,13 @@ public class BotComTest {
         ExCells26Master master = new ExCells26Master(botCom);
         botCom.setMaster(master);
         botCom.startPositionOfMaster = new XY(66, 55);
-        //botCom.init();
-        try {
-            for (int i = 0; i < 20; i++) {
-                botCom.expand();
-                if (i % 3 == 0)
+
+        for (int i = 0; i < 20; i++) {
+
+            if (i % 3 == 0)
                 master.setCurrentCell(master.getCurrentCell().getNextCell());
-            }
-        } catch (NoConnectingNeighbourException noConnectingNeighbourException) {
-            noConnectingNeighbourException.printStackTrace();
         }
+
         Cell startingCell = master.getCurrentCell();
         Cell current = startingCell;
         System.out.println("Starting print");
@@ -86,19 +79,18 @@ public class BotComTest {
     }
 
     @Test
-    public void dynamicCellTest(){
+    public void dynamicCellTest() {
         BotCom botCom = new BotCom();
         botCom.setFieldLimit(new XY(80, 60));
-        botCom.calculateCellSize();
         //botCom.getAllCells();
 
 
         System.out.println(botCom.cellDistanceX + " " + botCom.cellDistanceY);
 
-        for(Cell c : botCom.grid.values()){
+        for (Cell c : botCom.grid4.values()) {
             System.out.println(c);
         }
 
-        assertEquals(12,botCom.grid.size());
+        assertEquals(12, botCom.grid4.size());
     }
 }

@@ -19,8 +19,17 @@ public class Cell {
     private boolean isActive = false;
     private boolean usableCell = true;
     private Cell nextCell;
+    private Cell previousCell;
     private Hashtable<XY, Cell> neighbours = new Hashtable<>();
     private boolean verified;
+
+    public Cell getPreviousCell() {
+        return previousCell;
+    }
+
+    public void setPreviousCell(Cell previousCell) {
+        this.previousCell = previousCell;
+    }
 
     public boolean isVerified() {
         return verified;
@@ -88,9 +97,10 @@ public class Cell {
 
     public Cell getConnectingCell() {
         for (Cell c : neighbours.values()) {
-            if (c.isActive()) {
+            if (c.isActive() || !c.usableCell) {
                 continue;
             }
+
             if (c.getNeighbour(nextCell.getQuadrant()) != null) {
                 return c;
             }
@@ -98,9 +108,10 @@ public class Cell {
         return null;
     }
 
-    public void setActive(Cell nextCell) {
+    public Cell setActive(Cell nextCell) {
         isActive = true;
         this.nextCell = nextCell;
+        return this;
     }
 
     public boolean isInside(XY target, BotCom botCom) {
@@ -122,10 +133,16 @@ public class Cell {
         StringBuilder sb = new StringBuilder();
         sb.append("Position: ").append(quadrant).append(" is active: ").append(isActive());
         sb.append("\n\tNextCell: ");
-        if (nextCell == null){
+        if (nextCell == null) {
             sb.append("none");
-        }else{
+        } else {
             sb.append(nextCell.getQuadrant());
+        }
+        sb.append("\n\tPreviousCell: ");
+        if (previousCell == null) {
+            sb.append("none");
+        } else {
+            sb.append(previousCell.getQuadrant());
         }
 
         int index = 0;
@@ -141,21 +158,25 @@ public class Cell {
         return o instanceof Cell && ((Cell) o).getQuadrant().equals(quadrant);
     }
 
-    public void calculateDensity(ControllerContext controllerContext, BotCom botCom){
+    public void calculateDensity(ControllerContext controllerContext, BotCom botCom) {
         XY upperLeftCorner = quadrant.plus(XY.LEFT_UP.times(botCom.getCellsize() / 2));
-        XY lowerRightCorner = quadrant.plus(XY.RIGHT_DOWN.times(botCom.getCellsize()/2));
-        double cellArea = botCom.getCellsize()*2;
+        XY lowerRightCorner = quadrant.plus(XY.RIGHT_DOWN.times(botCom.getCellsize() / 2));
+        double cellArea = botCom.getCellsize() * botCom.getCellsize();
         double wallCount = 0;
-        for(int i = controllerContext.getViewUpperLeft().x; i < controllerContext.getViewLowerRight().x; i++){
-            for(int j = controllerContext.getViewUpperLeft().y; j < controllerContext.getViewLowerRight().y; j++){
-                if(XYsupport.isInRange(new XY(i, j),upperLeftCorner , lowerRightCorner)
-                        && controllerContext.getEntityAt(new XY(i, j)) == EntityType.WALL){
+        for (int i = controllerContext.getViewUpperLeft().x; i < controllerContext.getViewLowerRight().x; i++) {
+            for (int j = controllerContext.getViewUpperLeft().y; j < controllerContext.getViewLowerRight().y; j++) {
+                if (XYsupport.isInRange(new XY(i, j), upperLeftCorner, lowerRightCorner)
+                        && controllerContext.getEntityAt(new XY(i, j)) == EntityType.WALL) {
                     wallCount++;
                 }
             }
         }
-
-        if(wallCount / cellArea > 0.3)
+        if (wallCount / cellArea > 0.3) {
             setUsableCell(false);
+            Cell temp = this.getPreviousCell();
+            temp.setNextCell(this.getNextCell());
+            this.getNextCell().setPreviousCell(temp);
+        }
+        setVerified(true);
     }
 }

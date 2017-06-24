@@ -18,7 +18,7 @@ public class ExCells26ReaperMiniTest {
         Cell cellOfMini = new Cell(new XY(53,53));
         cellOfMini.setActive(cellOfMini);
         botCom.setCellForNextMini(cellOfMini);
-        botCom.grid.put(cellOfMini.getQuadrant(), cellOfMini);
+        botCom.grid4.put(cellOfMini.getQuadrant(), cellOfMini);
 
         ExCells26ReaperMini reaper = new ExCells26ReaperMini(botCom);
         assertTrue(cellOfMini.isInside(new XY(53,53),botCom));

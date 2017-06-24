@@ -1,5 +1,7 @@
 package ExCells26.Squirrel;
 
+import ExCells26.Helper.BotCom;
+import ExCells26.Helper.Cell;
 import ExCells26.Helper.Exceptions.FieldUnreachableException;
 import ExCells26.Helper.Exceptions.FullFieldException;
 import ExCells26.Helper.Exceptions.NoTargetException;
@@ -57,15 +59,18 @@ public class SquirrelHelper {
         return freeFields.iterator().next();
     }
 
-    public static XY findNextBadBeast(ControllerContext view) throws NoTargetException {
+    public static XY findNextEnemy(ControllerContext view) throws NoTargetException {
         XY positionOfTentativelyTarget = new XY(999, 999);
         for (int j = view.getViewUpperLeft().y; j < view.getViewLowerRight().y; j++) {
             for (int i = view.getViewUpperLeft().x; i < view.getViewLowerRight().x; i++) {
-                if (view.getEntityAt(new XY(i, j)) != EntityType.BAD_BEAST) {
-                    continue;
-                }
-                if (new XY(i, j).minus(view.locate()).length() < positionOfTentativelyTarget.minus(view.locate()).length()) {
-                    positionOfTentativelyTarget = new XY(i, j);
+                if ((view.getEntityAt(new XY(i, j)) == EntityType.MASTER_SQUIRREL)
+                        || view.getEntityAt(new XY(i, j)) == EntityType.BAD_BEAST) {
+                    if (view.locate().equals(new XY(i, j))) {
+                        continue;
+                    }
+                    if (new XY(i, j).minus(view.locate()).length() < positionOfTentativelyTarget.minus(view.locate()).length()) {
+                        positionOfTentativelyTarget = new XY(i, j);
+                    }
                 }
             }
         }
@@ -93,6 +98,7 @@ public class SquirrelHelper {
                 if (!goodField(view.getEntityAt(new XY(i, j)))) {
                     continue;
                 }
+
                 if (new XY(i, j).minus(view.locate()).length() < positionOfTentativelyTarget.minus(view.locate()).length()) {
                     positionOfTentativelyTarget = new XY(i, j);
                 }
@@ -117,4 +123,18 @@ public class SquirrelHelper {
         throw new FullFieldException();
     }
 
+    public static boolean checkRallyPoint(BotCom botCom, XY coordinate) {
+        if (botCom.getGrid().size() > 0) {
+            for (Cell cell : new ArrayList<>(botCom.getGrid())) {
+                if (XYsupport.distanceInSteps(coordinate, cell.getQuadrant()) >= 15) {
+                    botCom.addRallyPoint(coordinate);
+                    return true;
+                }
+            }
+        } else {
+            botCom.addRallyPoint(coordinate);
+            return true;
+        }
+        return false;
+    }
 }

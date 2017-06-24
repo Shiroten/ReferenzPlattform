@@ -8,19 +8,41 @@ import ExCells26.Squirrel.Mini.MiniType;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
-
 
 
 public class BotCom {
 
     private ExCells26Master master;
 
-    Hashtable<XY, Cell> getGrid() {
+    Hashtable<XY, Cell> getGrid4() {
+        return grid4;
+    }
+
+    public ArrayList<Cell> getGrid() {
         return grid;
     }
 
-    public Hashtable<XY, Cell> grid = new Hashtable<>();
+    public Cell getNextRallyPoint(XY coordinate) {
+        Cell temp = null;
+        for (Cell cell : new ArrayList<>(grid)) {
+            System.out.println(temp);
+            System.out.println(cell);
+
+            if (temp == null) {
+                temp = cell;
+            } else if (XYsupport.distanceInSteps(coordinate,temp.getQuadrant()) >
+                    XYsupport.distanceInSteps(coordinate,cell.getQuadrant())) {
+                temp = cell;
+            }
+        }
+        return temp;
+    }
+
+    ArrayList<Cell> grid = new ArrayList<>();
+
+    public Hashtable<XY, Cell> grid4 = new Hashtable<>();
     private MiniType nextMiniTypeToSpawn;
     private Cell cellForNextMini;
     private XY fieldLimit;
@@ -30,15 +52,15 @@ public class BotCom {
     public XY positionOfExCellMaster;
 
     //Default: 21 (last working number)
-    int cellDistanceX = 9;
-    int cellDistanceY = 9;
+    int cellDistanceX = 15;
+    int cellDistanceY = 15;
 
     //Default: 11 (last working number)
-    private int cellCenterOffsetX = 5;
-    private int cellCenterOffsetY = 5;
+    private int cellCenterOffsetX = 7;
+    private int cellCenterOffsetY = 7;
 
     //Default: 21 (last working number)
-    private int cellsize = 9;
+    private int cellsize = 15;
 
     public int getCellDistanceX() {
         return cellDistanceX;
@@ -100,86 +122,8 @@ public class BotCom {
         this.cellForNextMini = cellForNextMini;
     }
 
-    public void init() {
 
-        calculateCellSize();
-        getAllCells();
 
-        Cell firstCell = grid.get(cellAt(startPositionOfMaster));
-        if (firstCell == null) {
-            System.out.println("Fieldlimit " + fieldLimit + " Master: " + startPositionOfMaster);
-            firstCell = grid.values().iterator().next();
-        }
-        master.setCurrentCell(firstCell);
-
-        firstCell.setActive(firstCell);
-    }
-
-    public void calculateCellSize() {
-        int newCellDistanceX = cellDistanceX;
-        int newCellDistanceY = cellDistanceY;
-
-        for (int i = 0; i < cellDistanceX; i++) {
-            if (fieldLimit.x % (newCellDistanceX - i) == 0) {
-                cellDistanceX = newCellDistanceX - i;
-                break;
-            } else if (fieldLimit.x % (newCellDistanceX + i) == 0) {
-                cellDistanceX = newCellDistanceX + i;
-                break;
-            }
-        }
-
-        for (int i = 0; i < cellDistanceY; i++) {
-            if (fieldLimit.y % (newCellDistanceY - i) == 0) {
-                cellDistanceY = newCellDistanceY - i;
-                break;
-            } else if (fieldLimit.y % (newCellDistanceY + i) == 0) {
-                cellDistanceY = newCellDistanceY + i;
-                break;
-            }
-        }
-
-        cellCenterOffsetX = (cellDistanceX / 2) + 1;
-        cellCenterOffsetY = (cellDistanceY / 2) + 1;
-    }
-
-    public void getAllCells() {
-        int xLimit = (fieldLimit.x - 1) / cellDistanceX;
-        int yLimit = (fieldLimit.y - 1) / cellDistanceY;
-
-        for (int i = 0; i <= xLimit; i++) {
-            for (int j = 0; j <= yLimit; j++) {
-                Cell newCell = new Cell(new XY(cellCenterOffsetX + cellDistanceX * i, cellCenterOffsetY + cellDistanceY * j));
-                if (!validCell(newCell.getQuadrant())) {
-                    continue;
-                }
-                if (!(grid.contains(newCell))) {
-                    grid.put(newCell.getQuadrant(), newCell);
-                }
-            }
-        }
-        for (Cell c : grid.values()) {
-            addNeighbours(c.getQuadrant());
-        }
-    }
-
-    private void addNeighbours(XY atPosition) {
-        Cell c = grid.get(atPosition);
-        int xFactor = (atPosition.x - 1) / cellDistanceX; //calculates 4 for 105 and 5 for 126
-        int yFactor = (atPosition.y - 1) / cellDistanceY;
-
-        for (int j = -1; j < 2; j++) {
-            for (int i = -1; i < 2; i++) {
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-                if (grid.containsKey(new XY(cellDistanceX * (i + xFactor) + cellCenterOffsetX, cellDistanceY * (j + yFactor) + cellCenterOffsetY))) {
-                    //Doesn't matter because if clause would hinder performance more than just putting it in
-                    grid.get(new XY(cellDistanceX * (i + xFactor) + cellCenterOffsetX, cellDistanceY * (j + yFactor) + cellCenterOffsetY)).addNeighbour(c);
-                }
-            }
-        }
-    }
 
     XY cellAt(XY position) {
         //Range from 1<-11->21, 22<-32->42, 43<-53->63, 64<-74->84, 85<-95->105, ...
@@ -192,64 +136,25 @@ public class BotCom {
         return new XY(cellDistanceX * xFactor + cellCenterOffsetX, cellDistanceY * yFactor + cellCenterOffsetY);
     }
 
-    public void expand() throws NoConnectingNeighbourException {
-        Cell startingCell = master.getCurrentCell();
-        Cell currentCell = startingCell;
-        while (true) {
-            Cell tentativeCell = currentCell.getConnectingCell();
-            if (tentativeCell != null) {
-                tentativeCell.setActive(currentCell.getNextCell());
-                currentCell.setNextCell(tentativeCell);
-                return;
-            }
-            currentCell = currentCell.getNextCell();
-            if (currentCell.equals(startingCell)) {
-                throw new NoConnectingNeighbourException();
-            }
-        }
-    }
-
-    public void evenOut() {
-        //Todo: Zellen an Board ausrichten
-    }
-
-    public void checkAttendance(long round) {
-        for (Cell c : grid.values()) {
-            //Todo: Check epsilon (now at 3)
-            if (c.getLastFeedback() - round > 3) {
-                c.setMiniSquirrel(null);
-                nextMiniTypeToSpawn = MiniType.REAPER;
-            }
-        }
-    }
-
-    public boolean isFreeCell() {
-        try {
-            if (freeCell() != null) {
-                return true;
-            }
-        } catch (FullGridException e) {
-            return false;
-        }
-        return false;
-    }
-
-    public Cell freeCell() throws FullGridException {
-        for (Cell c : grid.values()) {
-            if (!c.isActive()) {
-                continue;
-            }
-            if (!c.isUsableCell()) {
-                continue;
-            }
-            if (c.getMiniSquirrel() == null)
-                return c;
-        }
-        throw new FullGridException();
-    }
 
     private boolean validCell(XY coordinate) {
         return !(coordinate.x < 0 || coordinate.x > fieldLimit.x) && !(coordinate.y < 0 || coordinate.y > fieldLimit.y);
     }
+
+    public void addRallyPoint(XY coordinate) {
+        if (grid.size() > 0) {
+            Cell temp = new Cell(coordinate);
+            grid.get(grid.size()-1).setNextCell(temp);
+            grid.add(temp);
+            temp.setNextCell(grid.get(0));
+        } else {
+            Cell temp = new Cell(coordinate);
+            temp.setNextCell(temp);
+            grid.add(temp);
+        }
+    }
+
+
+
 
 }

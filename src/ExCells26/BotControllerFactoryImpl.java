@@ -4,7 +4,6 @@ import ExCells26.Helper.BotCom;
 import ExCells26.Squirrel.ExCells26Master;
 import ExCells26.Squirrel.Mini.ExCells26FeralMini;
 import ExCells26.Squirrel.Mini.ExCells26ReaperMini;
-import ExCells26.Squirrel.Mini.ExCells26ReconMini;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.BotControllerFactory;
 
@@ -28,9 +27,6 @@ public class BotControllerFactoryImpl implements BotControllerFactory {
 
         BotController mini;
         switch (botcom.getNextMiniTypeToSpawn()) {
-            case RECON:
-                mini = new ExCells26ReconMini(botcom);
-                break;
             case REAPER:
                 mini = new ExCells26ReaperMini(botcom);
                 break;

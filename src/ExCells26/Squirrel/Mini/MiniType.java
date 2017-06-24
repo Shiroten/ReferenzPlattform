@@ -9,6 +9,6 @@ public enum MiniType {
     }
 
     //Recon spawn when: fieldLimit null and no Recon
-    //Reaper spawn when: free Cell or grid not fully expanded
+    //Reaper spawn when: free Cell or grid4 not fully expanded
     //Bomb spawn when: else
 }

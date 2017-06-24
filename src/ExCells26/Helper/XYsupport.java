@@ -115,4 +115,9 @@ public class XYsupport {
 
         return distanceX > distanceY ? distanceX : distanceY;
     }
+
+    public static boolean isGreater(XY first, XY second){
+        return first.x >= second.x && first.y >= second.y;
+
+    }
 }

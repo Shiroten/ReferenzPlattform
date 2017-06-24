@@ -98,11 +98,17 @@ public class PathFinder {
         while (!openList.isEmpty()) {
             Node currentNode = popMinF(openList);
             if (currentNode.getCoordinate().equals(destination)) {
-                return getSecondNode(currentNode).coordinate.minus(start);
+                XY direction = getSecondNode(currentNode).coordinate.minus(start);
+                //if (context.getEntityAt(context.locate()) == EntityType.MASTER_SQUIRREL)
+                    //System.out.println(getSecondNode(currentNode).coordinate + " " + start);
+                return direction;
             }
-            if (!currentNode.isInSight)
-                return getSecondNode(currentNode).coordinate.minus(start);
-
+            if (!currentNode.isInSight) {
+                XY direction = getSecondNode(currentNode).coordinate.minus(start);
+                //if (context.getEntityAt(context.locate()) == EntityType.MASTER_SQUIRREL)
+                    //System.out.println(getSecondNode(currentNode).coordinate + " " + start);
+                return direction;
+            }
             closedList.add(currentNode);
             expandNode(currentNode);
         }
@@ -117,7 +123,7 @@ public class PathFinder {
                 continue;
 
             //default = 5
-            int distanceWeight = 1;
+            int distanceWeight = 10;
             int nodeWeightMultiplier = 1;
             //Magic happens here
             double tentativeFx = XYsupport.distanceInSteps(start, succXy) * distanceWeight
@@ -154,15 +160,14 @@ public class PathFinder {
                             && entityTypeAtNewField != EntityType.WALL
                             && entityTypeAtNewField != EntityType.BAD_BEAST;
             }
-            if (!context.isMine(coordinate) && (entityTypeAtNewField == EntityType.MASTER_SQUIRREL || entityTypeAtNewField == EntityType.MINI_SQUIRREL))
+            if (!context.isMine(coordinate) && (entityTypeAtNewField == EntityType.MASTER_SQUIRREL))
                 return false;
 
         } catch (OutOfViewException e) {
             return true;
         }
         return entityTypeAtNewField != EntityType.WALL
-                && entityTypeAtNewField != EntityType.BAD_BEAST
-                && entityTypeAtNewField != EntityType.MASTER_SQUIRREL;
+                && entityTypeAtNewField != EntityType.BAD_BEAST;
     }
 
     private Node popMinF(List<Node> openList) {
@@ -203,6 +208,8 @@ public class PathFinder {
             predecessor = predecessor.getPredecessor();
         }
 
+        //if (context.getEntityAt(context.locate()) == EntityType.MASTER_SQUIRREL)
+            //System.out.println(predecessor + " " + context.getEntityAt(predecessor.coordinate));
         return predecessor;
     }
 
@@ -211,13 +218,13 @@ public class PathFinder {
         try {
             switch (context.getEntityAt(position)) {
                 case BAD_PLANT:
-                    return 100;
+                    return 100 + checkAdjacentBadBeast(position);
                 case GOOD_BEAST:
                     return -200 + checkAdjacentBadBeast(position);
                 case GOOD_PLANT:
                     return -100 + checkAdjacentBadBeast(position);
                 case NONE:
-                    return checkAdjacentBadBeast(position) + 20;
+                    return checkAdjacentBadBeast(position);
             }
         } catch (OutOfViewException e) {
             return 0;
@@ -234,7 +241,7 @@ public class PathFinder {
                     cumulatedWeight = cumulatedWeight + multiplier * 150;
                 else if (context.getEntityAt(position.plus(direction)) == EntityType.MASTER_SQUIRREL
                         && !context.isMine(position.plus(direction)))
-                    cumulatedWeight = cumulatedWeight + multiplier * 300;
+                    cumulatedWeight = cumulatedWeight + multiplier * 600;
             } catch (OutOfViewException e) {
                 //Do nothing
             }

@@ -1,9 +1,9 @@
 package ExCells26.Helper;
 
 
-import ExCells26.Squirrel.ExCells26Master;
 import ExCells26.Helper.Exceptions.FullGridException;
 import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
+import ExCells26.Squirrel.ExCells26Master;
 import ExCells26.Squirrel.Mini.MiniType;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.utilities.XY;
@@ -11,9 +11,7 @@ import de.hsa.games.fatsquirrel.utilities.XY;
 import java.util.Hashtable;
 
 
-/**
- * Created by Shiroten on 15.06.2017.
- */
+
 public class BotCom {
 
     private ExCells26Master master;
@@ -21,6 +19,7 @@ public class BotCom {
     Hashtable<XY, Cell> getGrid() {
         return grid;
     }
+
     public Hashtable<XY, Cell> grid = new Hashtable<>();
     private MiniType nextMiniTypeToSpawn;
     private Cell cellForNextMini;
@@ -28,7 +27,7 @@ public class BotCom {
 
     //Todo: fieldLimit muss durch das MasterSquirrel auf startPositions view gesetzt werden.
     private boolean fieldLimitFound;
-    public XY startPositionOfMaster;
+    XY startPositionOfMaster;
     public XY positionOfExCellMaster;
 
     //Default: 21 (last working number)
@@ -86,8 +85,8 @@ public class BotCom {
         return fieldLimitFound;
     }
 
-    public void setFieldLimitFound(boolean fieldLimitFound) {
-        this.fieldLimitFound = fieldLimitFound;
+    public void setFieldLimitFound() {
+        this.fieldLimitFound = true;
     }
 
     public void setStartPositionOfMaster(XY startPositionOfMaster) {
@@ -184,7 +183,7 @@ public class BotCom {
         }
     }
 
-    public XY cellAt(XY position) {
+    XY cellAt(XY position) {
         //Range from 1<-11->21, 22<-32->42, 43<-53->63, 64<-74->84, 85<-95->105, ...
         //Modulo Operation with 21
 
@@ -226,12 +225,23 @@ public class BotCom {
         }
     }
 
+    public boolean isFreeCell() {
+        try {
+            if (freeCell() != null) {
+                return true;
+            }
+        } catch (FullGridException e) {
+            return false;
+        }
+        return false;
+    }
+
     public Cell freeCell() throws FullGridException {
         for (Cell c : grid.values()) {
             if (!c.isActive()) {
                 continue;
             }
-            if (!c.isUsableCell()){
+            if (!c.isUsableCell()) {
                 continue;
             }
             if (c.getMiniSquirrel() == null)

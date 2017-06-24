@@ -10,9 +10,6 @@ import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
-/**
- * Created by Shiroten on 15.06.2017.
- */
 public class ExCells26ReconMini implements BotController {
 
     private BotCom botCom;
@@ -37,12 +34,12 @@ public class ExCells26ReconMini implements BotController {
             moveToPoint(view, new XY(view.getViewLowerRight().x, view.locate().y));
             checkRightLimit(view);
         } else if(lowerFieldLimit == 0){
-            moveToPoint(view, new XY(view.getViewLowerRight().y, view.locate().x));
+            moveToPoint(view, new XY(view.locate().x, view.getViewLowerRight().y));
             checkLowerLimit(view);
         } else if(!botCom.isFieldLimitFound()) {
             System.out.println("Ende gefunden, Captain!");
             botCom.setFieldLimit(new XY(rightFieldLimit, lowerFieldLimit));
-            botCom.setFieldLimitFound(true);
+            botCom.setFieldLimitFound();
         } else{
             if(reaperAI == null) {
                 initReaperAi();

@@ -2,10 +2,7 @@ package ExCells26.Squirrel;
 
 import ExCells26.Helper.BotCom;
 import ExCells26.Helper.Cell;
-import ExCells26.Helper.Exceptions.FieldUnreachableException;
-import ExCells26.Helper.Exceptions.FullFieldException;
-import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
-import ExCells26.Helper.Exceptions.NoTargetException;
+import ExCells26.Helper.Exceptions.*;
 import ExCells26.Helper.PathFinder;
 import ExCells26.Helper.XYsupport;
 import ExCells26.Squirrel.Mini.ExCells26ReaperMini;
@@ -48,6 +45,7 @@ public class ExCells26Master implements BotController {
         toDoAtStartOfNextStep(view);
         if (firstCall) {
             initOfMaster(view);
+            return;
         }
 
         if (view.getEnergy() < 100) {
@@ -59,16 +57,27 @@ public class ExCells26Master implements BotController {
             return;
         }
 
-        if (botCom.isFieldLimitFound() && view.getRemainingSteps() > 100
-                && maximumDensityOfNodes() && isSaturated()) {
-            if (currentCell.getQuadrant().minus(view.locate()).length() > 7.1) {
-                collectMiniOfCell();
-                return;
+        if (!(botCom.isFieldLimitFound() && view.getRemainingSteps() > 100
+                && maximumDensityOfNodes() && isSaturated())) {
+            if (currentCell.getQuadrant().minus(view.locate()).length() < 7.1) {
+                if (firstTimeInCell && currentCell.getMiniSquirrel() != null) {
+                    collectMiniOfCell();
+                    return;
+                }
+                if (currentCell.getMiniSquirrel() == null && view.getEnergy() > 200) {
+                    spawningReaper(currentCell, 200);
+                    changeCurrentCell();
+                    return;
+                }
             }
-        }
+            moveToCurrentCell();
+            return;
 
+        }
         getMoreMinis();
+
     }
+
 
     private void getMoreMinis() {
         if (!maximumDensityOfNodes()) {
@@ -82,20 +91,20 @@ public class ExCells26Master implements BotController {
                 try {
                     botCom.expand();
                 } catch (NoConnectingNeighbourException e) {
-                    logger.log(Level.WARNING, "NoConnectingNeighbourException");
+                    logger.log(Level.WARNING, "NoConnectingNeighbourException of getMoreMinis");
                     logger.log(Level.WARNING, e.getMessage());
                 }
             }
         }
 
-        if (currentCell.getQuadrant().minus(view.locate()).length() > 7.1) {
+        if (currentCell.getQuadrant().minus(view.locate()).length() < 7.1) {
             collectMiniOfCell();
-
         }
     }
 
     private void enhanceDensityOfGrid() {
         //Todo: rework
+        botCom.calculateCellSize();
     }
 
     private boolean isSaturated() {
@@ -104,7 +113,10 @@ public class ExCells26Master implements BotController {
     }
 
     private boolean maximumDensityOfNodes() {
-        //Todo: rework
+        int treshold = 5;
+        if (botCom.getCellDistanceX() < treshold && botCom.getCellDistanceY() < treshold) {
+            return true;
+        }
         return false;
     }
 
@@ -118,35 +130,22 @@ public class ExCells26Master implements BotController {
     }
 
     private void spawnMoreMinis() {
-        //Todo: rework
-
-        /*
-        Cell start = currentCell;
-        Cell toCheck = start;
-        while (true) {
-            toCheck = toCheck.getNextCell();
-            if (toCheck.getMiniSquirrel() == null) {
-                break;
-            } else {
-                toCheck = toCheck.getNextCell();
-            }
-
-            if (toCheck.equals(start)) {
-                try {
-                    botCom.expand();
-                } catch (NoConnectingNeighbourException e) {
-                    return;
-                }
-            }
+        try {
+            spawningReaper(botCom.freeCell(), 200);
+        } catch (FullGridException e) {
+            logger.log(Level.WARNING, "FullGridException of spawnMoreMinis");
+            logger.log(Level.WARNING, e.getMessage());
         }
-        spawningReaper(toCheck);
-        changeCurrentCell();
-        */
     }
 
     private boolean allActiveCellsAreUsed() {
-        //Todo: rework
-        return false;
+        //Checks if all possible nodes for cells within parameters of cellDistance are used
+        for (Cell cell : botCom.grid.values()) {
+            if (cell.isUsableCell() && !cell.isActive()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private void collectMiniOfCell() {
@@ -162,7 +161,6 @@ public class ExCells26Master implements BotController {
     private void changeCurrentCell() {
         firstTimeInCell = true;
         currentCell = currentCell.getNextCell();
-        //Todo: remove after debugging
         //System.out.println("\nGo to nextCell: " + currentCell);
     }
 
@@ -172,18 +170,17 @@ public class ExCells26Master implements BotController {
         this.view = view;
     }
 
-    private void spawningReaper(Cell cellForMini) {
+    private void spawningReaper(Cell cellForMini, int startEnergy) {
         try {
             botCom.setNextMiniTypeToSpawn(MiniType.REAPER);
             botCom.setCellForNextMini(cellForMini);
             XY spawnDirection = cellForMini.getNextCell().getQuadrant().minus(view.locate());
             spawnDirection = XYsupport.normalizedVector(spawnDirection).times(-1);
             if (view.getEntityAt(view.locate().plus(spawnDirection)) == EntityType.NONE) {
-                view.spawnMiniBot(spawnDirection, 100);
-                System.out.println("Spawning Mini");
+                view.spawnMiniBot(spawnDirection, startEnergy);
             }
         } catch (SpawnException | OutOfViewException e) {
-            logger.log(Level.WARNING, "OutOfViewException");
+            logger.log(Level.WARNING, "OutOfViewException of spawningReaper");
             logger.log(Level.WARNING, e.getMessage());
         }
     }
@@ -194,13 +191,15 @@ public class ExCells26Master implements BotController {
         try {
             betterMove = pf.directionTo(view.locate(), currentCell.getQuadrant(), view);
         } catch (FullFieldException e) {
-            Logger logger = Logger.getLogger(Launcher.class.getName());
-            logger.log(Level.WARNING, "FullFieldException");
-            logger.log(Level.WARNING, e.getMessage());
-            changeCurrentCell();
+            try {
+                betterMove = SquirrelHelper.tryAgain(currentCell.getQuadrant(), view, pf);
+            } catch (FullFieldException e1) {
+                logger.log(Level.WARNING, "FullFieldException of moveToCurrentCell");
+                logger.log(Level.WARNING, e1.getMessage());
+                e.printStackTrace();
+            }
         } catch (FieldUnreachableException e) {
-            Logger logger = Logger.getLogger(Launcher.class.getName());
-            logger.log(Level.WARNING, "FieldUnreachableException");
+            logger.log(Level.WARNING, "FieldUnreachableException of moveToCurrentCell");
             logger.log(Level.WARNING, e.getMessage());
             changeCurrentCell();
         }
@@ -214,10 +213,10 @@ public class ExCells26Master implements BotController {
         try {
             toMove = pf.directionTo(view.locate(), middle, view);
         } catch (FullFieldException e) {
-            logger.log(Level.WARNING, "FullFieldException");
+            logger.log(Level.WARNING, "FullFieldException of collectingReapers");
             logger.log(Level.WARNING, e.getMessage());
         } catch (FieldUnreachableException e) {
-            logger.log(Level.WARNING, "FieldUnreachableException");
+            logger.log(Level.WARNING, "FieldUnreachableException of collectingReapers");
             logger.log(Level.WARNING, e.getMessage());
         }
         view.move(XYsupport.normalizedVector(toMove));
@@ -238,7 +237,7 @@ public class ExCells26Master implements BotController {
                 botCom.expand();
             }
         } catch (NoConnectingNeighbourException e) {
-            logger.log(Level.WARNING, "NoConnectingNeighbourException");
+            logger.log(Level.WARNING, "NoConnectingNeighbourException of initOfMaster");
             logger.log(Level.WARNING, e.getMessage());
         }
         botCom.setNextMiniTypeToSpawn(MiniType.RECON);

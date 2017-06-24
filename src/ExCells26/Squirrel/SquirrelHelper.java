@@ -2,12 +2,12 @@ package ExCells26.Squirrel;
 
 import ExCells26.Helper.Exceptions.NoTargetException;
 import ExCells26.Helper.XYsupport;
-import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by Shiroten on 24.06.2017.
@@ -19,11 +19,16 @@ public class SquirrelHelper {
         for (int j = -2; j < 3; j++) {
             for (int i = -2; i < 3; i++) {
                 //Get All fields
+                if (view.locate().x + i < 1 || view.locate().y + j < 1
+                        || view.locate().x + i > 81 || view.locate().y + j > 61) {
+                    continue;
+                }
                 if (goodField(view.getEntityAt(view.locate().plus(new XY(i, j))))) {
                     freeFields.add(view.locate().plus(new XY(i, j)));
                 }
             }
         }
+
         ArrayList<XY> toRemove = new ArrayList<>();
         for (XY field : freeFields) {
             //Check for BadBeast and remove all neighbour fields
@@ -39,13 +44,13 @@ public class SquirrelHelper {
             }
         }
         freeFields.removeAll(toRemove);
-
         if (freeFields.isEmpty()) {
             //throw error if no freeField is left
             throw new NoSuchFieldError();
         }
-
+        //Collections.shuffle(freeFields);
         //return with next freeField if possible
+
         return freeFields.iterator().next();
     }
 

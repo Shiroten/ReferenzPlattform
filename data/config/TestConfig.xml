@@ -1,0 +1,22 @@
+ <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:gameConfig xmlns:ns2="game_config">
+    <board_config>
+        <badBeastCount>0</badBeastCount>
+        <badPlantCount>40</badPlantCount>
+        <boardName>Wettbewerb_1.board</boardName> <!-- Name des Spielfelds oder "random" für eine zufälliges Spielfeld -->
+        <entities>BadBeast</entities>
+        <entities>BadPlant</entities>
+        <entities>GoodBeast</entities>
+        <entities>GoodPlant</entities>
+        <goodBeastCount>40</goodBeastCount>
+        <goodPlantCount>40</goodPlantCount>
+        <heigth>61</heigth>
+        <wallCount>0</wallCount>
+        <width>81</width>
+    </board_config>
+    <competition>false</competition>
+    <configName>Wettbewerb</configName> <!-- Name der Konfiguration für die Bestenliste -->
+    <numberOfRounds>2</numberOfRounds> <!-- zwei Spielrunden -->
+    <numberOfTurns>180</numberOfTurns> <!-- 180 Spielzüge pro Spielrunde -->
+    <turnsPerSecond>10</turnsPerSecond> <!-- Anzahl der Spielzüge pro Sekunde -->
+</ns2:gameConfig>

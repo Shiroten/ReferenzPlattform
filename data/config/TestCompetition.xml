@@ -45,6 +45,6 @@
     <competition>true</competition>
     <configName>Quick Competition</configName>
     <numberOfRounds>2</numberOfRounds>
-    <numberOfTurns>100</numberOfTurns>
+    <numberOfTurns>10000</numberOfTurns>
     <turnsPerSecond>10</turnsPerSecond>
 </ns2:gameConfig>

@@ -113,11 +113,12 @@ public class PathFinder {
         try {
             entityTypeAtNewField = context.getEntityAt(coordinate);
         } catch (OutOfViewException e) {
-            return false;
+            //throws to many false FullFieldException if set to false because of OutOfViewExceptions;
+            return true;
         }
 
-        if (!XYsupport.isInRange(coordinate, context.getViewUpperLeft().plus(XY.LEFT_UP), context.getViewLowerRight().plus(XY.RIGHT_DOWN)))
-            return false;
+        //if (!XYsupport.isInRange(coordinate, context.getViewUpperLeft().plus(XY.LEFT_UP), context.getViewLowerRight().plus(XY.RIGHT_DOWN)))
+            //return false;
         try {
             if (context.getEntityAt(context.locate()) == EntityType.MINI_SQUIRREL) {
                 if (context.getEntityAt(coordinate) == EntityType.MASTER_SQUIRREL)

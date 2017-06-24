@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <ns2:leaderboard xmlns:ns2="leaderboard">
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>542</points>
+            <ranking>1</ranking>
+        </score>
+    </entry>
     <maxEntries>10</maxEntries>
 </ns2:leaderboard>

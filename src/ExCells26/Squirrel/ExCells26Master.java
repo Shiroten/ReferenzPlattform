@@ -1,18 +1,25 @@
 package ExCells26.Squirrel;
 
-import ExCells26.Squirrel.Mini.ExCells26ReaperMini;
-import ExCells26.Helper.*;
+import ExCells26.Helper.BotCom;
+import ExCells26.Helper.Cell;
 import ExCells26.Helper.Exceptions.FieldUnreachableException;
 import ExCells26.Helper.Exceptions.FullFieldException;
 import ExCells26.Helper.Exceptions.NoConnectingNeighbourException;
 import ExCells26.Helper.Exceptions.NoTargetException;
+import ExCells26.Helper.PathFinder;
+import ExCells26.Helper.XYsupport;
+import ExCells26.Squirrel.Mini.ExCells26ReaperMini;
 import ExCells26.Squirrel.Mini.MiniType;
+import de.hsa.games.fatsquirrel.Launcher;
 import de.hsa.games.fatsquirrel.core.actions.OutOfViewException;
 import de.hsa.games.fatsquirrel.core.actions.SpawnException;
 import de.hsa.games.fatsquirrel.core.bot.BotController;
 import de.hsa.games.fatsquirrel.core.bot.ControllerContext;
 import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ExCells26Master implements BotController {
 
@@ -22,7 +29,9 @@ public class ExCells26Master implements BotController {
     private ControllerContext view;
     private ExCells26ReaperMini miniOfCurrentCell;
     private boolean firstTimeInCell = true;
-    private int fleeing = 5;
+    private int fleeing = 0;
+    private boolean fullField = false;
+    private int test = 10;
 
     public ExCells26Master(BotCom botCom) {
         this.botCom = botCom;
@@ -31,6 +40,37 @@ public class ExCells26Master implements BotController {
     @Override
     public void nextStep(ControllerContext view) {
         toDoAtStartOfNextStep(view);
+        if (firstCall) {
+            initOfMaster(view);
+        }
+        if (!fullField) {
+            try {
+                botCom.expand();
+            } catch (NoConnectingNeighbourException e) {
+                fullField = true;
+            }
+        }
+        if (currentCell.getQuadrant().minus(view.locate()).length() < 5.7) {
+            spawningReaper(currentCell);
+            changeCurrentCell();
+        }
+        if (test % 10 == 1){
+            spawningReaper(currentCell);
+            changeCurrentCell();
+            test++;
+        }
+
+        moveToCurrentCell();
+    }
+
+    public void nextStep2(ControllerContext view) {
+        Logger logger2 = Logger.getLogger(Launcher.class.getName());
+        logger2.log(Level.FINE, "Starting NextStep");
+
+        toDoAtStartOfNextStep(view);
+        if (firstCall) {
+            initOfMaster(view);
+        }
 
         XY positionOfNextBadBeast;
         try {
@@ -39,37 +79,32 @@ public class ExCells26Master implements BotController {
             positionOfNextBadBeast = new XY(999, 999);
         }
 
-        if (fleeing > 0){
+        if (fleeing > 0) {
             //Move away from BadBeast to safely execute the rest of the implementation
             XY toMove = null;
             try {
                 toMove = SquirrelHelper.safeField(view);
             } catch (NoTargetException e) {
-                System.out.println("Screwed");
+                Logger logger = Logger.getLogger(Launcher.class.getName());
+                logger.log(Level.FINE, e.getMessage());
             }
-            view.move(toMove.minus(view.locate()));
 
             PathFinder pf = new PathFinder(botCom);
             try {
-                view.move(pf.directionTo(view.locate(),toMove,view));
+                view.move(pf.directionTo(view.locate(), toMove, view));
             } catch (FullFieldException e) {
                 currentCell.setUsableCell(false);
                 changeCurrentCell();
             } catch (FieldUnreachableException e) {
-                //Todo: needs better ExceptionHandling
-                e.printStackTrace();
+                changeCurrentCell();
             }
-
             fleeing--;
         }
 
         if (positionOfNextBadBeast.minus(view.locate()).length() < 2.9) {
-            fleeing = 5;
+            fleeing = 10;
+            changeCurrentCell();
         } else {
-            if (firstCall) {
-                initOfMaster(view);
-            }
-
             if (view.getEnergy() > 500) {
                 spawnMoreMinis();
             }
@@ -96,8 +131,8 @@ public class ExCells26Master implements BotController {
                         changeCurrentCell();
                     }
                 } catch (NoConnectingNeighbourException e) {
-                    //Todo: add to Log
-                    //e.printStackTrace();
+                    Logger logger = Logger.getLogger(Launcher.class.getName());
+                    logger.log(Level.FINE, e.getMessage());
                 }
                 changeCurrentCell();
             }
@@ -159,6 +194,7 @@ public class ExCells26Master implements BotController {
             spawnDirection = XYsupport.normalizedVector(spawnDirection).times(-1);
             if (view.getEntityAt(view.locate().plus(spawnDirection)) == EntityType.NONE) {
                 view.spawnMiniBot(spawnDirection, 100);
+                System.out.println("Spawning Mini");
             } else {
                 //Todo: adding can't spawn
             }
@@ -173,7 +209,15 @@ public class ExCells26Master implements BotController {
         XY betterMove = XY.ZERO_ZERO;
         try {
             betterMove = pf.directionTo(view.locate(), currentCell.getQuadrant(), view);
-        } catch (FullFieldException | FieldUnreachableException e) {
+        } catch (FullFieldException e) {
+            Logger logger = Logger.getLogger(Launcher.class.getName());
+            logger.log(Level.WARNING, "FullFieldException");
+            logger.log(Level.WARNING, e.getMessage());
+            changeCurrentCell();
+        } catch (FieldUnreachableException e) {
+            Logger logger = Logger.getLogger(Launcher.class.getName());
+            logger.log(Level.WARNING, "FieldUnreachableException");
+            logger.log(Level.WARNING, e.getMessage());
             changeCurrentCell();
         }
         view.move(betterMove);
@@ -200,14 +244,15 @@ public class ExCells26Master implements BotController {
         botCom.setFieldLimit(new XY(80, 60));
         botCom.setMaster(this);
         botCom.init();
+        botCom.calculateCellSize();
+        botCom.getAllCells();
+
         try {
-            botCom.expand();
-            botCom.expand();
-            botCom.expand();
-            botCom.expand();
+            for (int i = 0; i < 4; i++) {
+                botCom.expand();
+            }
         } catch (NoConnectingNeighbourException e) {
-            //Todo: add to Log
-            //e.printStackTrace();
+
         }
         botCom.setNextMiniTypeToSpawn(MiniType.RECON);
         for (XY direction : XYsupport.directions()) {

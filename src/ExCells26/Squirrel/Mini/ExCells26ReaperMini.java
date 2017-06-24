@@ -53,9 +53,7 @@ public class ExCells26ReaperMini implements BotController {
 
         myCell.setLastFeedback(view.getRemainingSteps());
 
-
         XY toMove = XYsupport.normalizedVector(myCell.getQuadrant().minus(view.locate()));
-
         try {
             toMove = calculateTarget(view);
         } catch (NoTargetException e) {
@@ -87,7 +85,7 @@ public class ExCells26ReaperMini implements BotController {
         if (!goToMaster) {
             try {
                 if (view.isMine(view.locate().plus(toMove))) {
-                    toMove = XY.ZERO_ZERO;
+                    view.doNothing();
                 }
             } catch (OutOfViewException e) {
                 //Todo: add log
@@ -107,18 +105,24 @@ public class ExCells26ReaperMini implements BotController {
     private XY runningCircle(ControllerContext view) throws NoTargetException {
         PathFinder pf = new PathFinder(botCom);
         for (int i = 0; i < 8; i++) {
+            if (myCell == null){
+                try {
+                    myCell = botCom.freeCell();
+                } catch (FullGridException e) {
+                    e.printStackTrace();
+                }
+            }
             try {
-                if (view.locate().equals(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)))) {
+                if (view.locate().equals(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)))) {
                     cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);
                 }
             } catch (Exception e) {
-                System.out.println(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)));
                 //e.printStackTrace();
             }
-            if (pf.isWalkable(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)), view)) {
+            if (pf.isWalkable(myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)), view)) {
                 try {
                     return pf.directionTo(view.locate(),
-                            myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 2)),
+                            myCell.getQuadrant().plus(cornerVector.times(botCom.getCellsize() / 4)),
                             view);
                 } catch (FullFieldException | FieldUnreachableException e) {
                     cornerVector = XYsupport.rotate(XYsupport.Rotation.clockwise, cornerVector, 1);

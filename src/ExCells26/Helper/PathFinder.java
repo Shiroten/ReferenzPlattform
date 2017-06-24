@@ -156,16 +156,16 @@ public class PathFinder {
                 else
                     return entityTypeAtNewField != EntityType.MINI_SQUIRREL
                             && entityTypeAtNewField != EntityType.WALL
-                            && entityTypeAtNewField != EntityType.BAD_BEAST
-                            && entityTypeAtNewField != EntityType.BAD_PLANT;
+                            && entityTypeAtNewField != EntityType.BAD_BEAST;
             }
+            if(!context.isMine(coordinate))
+                return false;
 
         } catch (OutOfViewException e) {
             return true;
         }
         return entityTypeAtNewField != EntityType.WALL
                 && entityTypeAtNewField != EntityType.BAD_BEAST
-                && entityTypeAtNewField != EntityType.BAD_PLANT
                 && entityTypeAtNewField != EntityType.MASTER_SQUIRREL;
     }
 
@@ -237,6 +237,9 @@ public class PathFinder {
             try {
                 if (context.getEntityAt(position.plus(direction)) == EntityType.BAD_BEAST)
                     cumulatedWeight = cumulatedWeight + multiplier * 150;
+                else if(context.getEntityAt(position.plus(direction)) == EntityType.MASTER_SQUIRREL
+                        && !context.isMine(position.plus(direction)))
+                    cumulatedWeight = cumulatedWeight + multiplier * 300;
             } catch (OutOfViewException e) {
                 //Do nothing
             }

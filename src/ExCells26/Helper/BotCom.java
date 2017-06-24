@@ -25,7 +25,6 @@ public class BotCom {
     private Cell cellForNextMini;
     private XY fieldLimit;
 
-    //Todo: fieldLimit muss durch das MasterSquirrel auf startPositions view gesetzt werden.
     private boolean fieldLimitFound;
     XY startPositionOfMaster;
     public XY positionOfExCellMaster;
@@ -103,7 +102,6 @@ public class BotCom {
 
     public void init() {
 
-        //Todo: Bug found with no starting cells calculated.
         calculateCellSize();
         getAllCells();
 

@@ -117,7 +117,7 @@ public class PathFinder {
                 continue;
 
             //default = 5
-            int distanceWeight = 1;
+            int distanceWeight = 10;
             int nodeWeightMultiplier = 1;
             //Magic happens here
             double tentativeFx = XYsupport.distanceInSteps(start, succXy) * distanceWeight
@@ -211,7 +211,7 @@ public class PathFinder {
         try {
             switch (context.getEntityAt(position)) {
                 case BAD_PLANT:
-                    return 100;
+                    return 200 + checkAdjacentBadBeast(position);
                 case GOOD_BEAST:
                     return -200 + checkAdjacentBadBeast(position);
                 case GOOD_PLANT:

@@ -17,6 +17,8 @@ import de.hsa.games.fatsquirrel.core.entities.EntityType;
 import de.hsa.games.fatsquirrel.utilities.XY;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +29,9 @@ public class ExCells26ReaperMini implements BotController {
     ArrayList<XY> unReachableGoodies = new ArrayList<>();
     private XY cornerVector = XY.UP;
     boolean goToMaster = false;
+    private ArrayList<XY> lastPositions = new ArrayList<>();
     private Logger logger = Logger.getLogger(Launcher.class.getName());
+    private static boolean DEBUG = false;
 
     public ExCells26ReaperMini(BotCom botCom) {
         this.botCom = botCom;
@@ -48,6 +52,8 @@ public class ExCells26ReaperMini implements BotController {
         if (myCell != null) {
             myCell.setLastFeedback(view.getRemainingSteps());
         }
+
+        positionsCheck(view);
 
         if (view.getRemainingSteps() < 200) {
             goToMaster = true;
@@ -79,7 +85,8 @@ public class ExCells26ReaperMini implements BotController {
         try {
             positionOfNearestGoodies = SquirrelHelper.findNextGoodies(view);
         } catch (NoTargetException e) {
-            logger.log(Level.WARNING, "NoTargetException of mini nextStep");
+            if (DEBUG)
+                logger.log(Level.WARNING, "NoTargetException of mini nextStep");
         }
         if (positionOfNearestGoodies != null) {
             moveToTarget(view, positionOfNearestGoodies, false);
@@ -89,8 +96,26 @@ public class ExCells26ReaperMini implements BotController {
                 runningCircle(view);
                 return;
             } catch (NoTargetException e) {
-                logger.log(Level.WARNING, "NoTargetException of mini nextStep/runningCircle");
+                if (DEBUG)
+                    logger.log(Level.WARNING, "NoTargetException of mini nextStep/runningCircle");
             }
+        }
+    }
+
+    private void positionsCheck(ControllerContext view) {
+        if (lastPositions.size() > 5) {
+            lastPositions.remove(0);
+        }
+        lastPositions.add(view.locate());
+        int counter = 0;
+        for (XY positions : lastPositions) {
+            if (view.locate().equals(positions)) {
+                counter++;
+            }
+        }
+
+        if (counter > 2) {
+            getNewCell();
         }
     }
 
@@ -99,14 +124,27 @@ public class ExCells26ReaperMini implements BotController {
         try {
             view.move(pf.directionTo(target, view, walkOnMaster));
         } catch (FullFieldException e) {
-            logger.log(Level.WARNING, "FullFieldException of mini nextStep");
-            logger.log(Level.WARNING, "Position: " + view.locate().toString());
-            logger.log(Level.WARNING, "Destination: " + target);
+            if (DEBUG) {
+                logger.log(Level.WARNING, "FullFieldException of mini nextStep");
+                logger.log(Level.WARNING, "Position: " + view.locate().toString());
+                logger.log(Level.WARNING, "Destination: " + target);
+                getNewCell();
+            }
         } catch (FieldUnreachableException e) {
-            logger.log(Level.WARNING, "FieldUnreachableException of mini nextStep");
-            logger.log(Level.WARNING, "Position: " + view.locate().toString());
-            logger.log(Level.WARNING, "Destination: " + target);
+            if (DEBUG) {
+                logger.log(Level.WARNING, "FieldUnreachableException of mini nextStep");
+                logger.log(Level.WARNING, "Position: " + view.locate().toString());
+                logger.log(Level.WARNING, "Destination: " + target);
+                getNewCell();
+            }
         }
+    }
+
+    private void getNewCell(){
+        List<Cell> tempCellList = new ArrayList<>(botCom.grid.values());
+        Collections.shuffle(tempCellList);
+        int randomNumber = (int) Math.random() * tempCellList.size();
+        myCell = tempCellList.get(randomNumber);
     }
 
     private void runningCircle(ControllerContext view) throws NoTargetException {
@@ -147,7 +185,8 @@ public class ExCells26ReaperMini implements BotController {
                         return new XY(i, j);
                     }
                 } catch (OutOfViewException e) {
-                    logger.log(Level.WARNING, "OutOfViewException of mini getAccuratePositionOfMaster");
+                    if (DEBUG)
+                        logger.log(Level.WARNING, "OutOfViewException of mini getAccuratePositionOfMaster");
                 }
             }
         }

@@ -46,11 +46,11 @@
         </score>
     </entry>
     <entry>
-        <date>2017-06-24</date>
+        <date>2017-06-25</date>
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>29725</points>
+            <points>48442</points>
             <ranking>6</ranking>
         </score>
     </entry>
@@ -59,8 +59,17 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>29111</points>
+            <points>29725</points>
             <ranking>7</ranking>
+        </score>
+    </entry>
+    <entry>
+        <date>2017-06-24</date>
+        <score>
+            <id>0</id>
+            <name>ExCells26</name>
+            <points>29111</points>
+            <ranking>8</ranking>
         </score>
     </entry>
     <entry>
@@ -69,15 +78,6 @@
             <id>0</id>
             <name>ExCells26</name>
             <points>24690</points>
-            <ranking>8</ranking>
-        </score>
-    </entry>
-    <entry>
-        <date>2017-06-24</date>
-        <score>
-            <id>0</id>
-            <name>ExCells26</name>
-            <points>24617</points>
             <ranking>9</ranking>
         </score>
     </entry>
@@ -86,7 +86,7 @@
         <score>
             <id>0</id>
             <name>ExCells26</name>
-            <points>22371</points>
+            <points>24617</points>
             <ranking>10</ranking>
         </score>
     </entry>

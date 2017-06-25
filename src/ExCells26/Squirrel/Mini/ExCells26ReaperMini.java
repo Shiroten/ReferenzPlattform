@@ -103,7 +103,7 @@ public class ExCells26ReaperMini implements BotController {
     }
 
     private void positionsCheck(ControllerContext view) {
-        if (lastPositions.size() > 5) {
+        if (lastPositions.size() > 7) {
             lastPositions.remove(0);
         }
         lastPositions.add(view.locate());
@@ -115,6 +115,9 @@ public class ExCells26ReaperMini implements BotController {
         }
 
         if (counter > 2) {
+            while (lastPositions.contains(view.locate())) {
+                lastPositions.remove(view.locate());
+            }
             getNewCell();
         }
     }

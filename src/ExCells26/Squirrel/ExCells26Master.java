@@ -51,8 +51,18 @@ public class ExCells26Master implements BotController {
             return;
         }
 
-        if (positionsCheck()){
+        if (positionsCheck()) {
             moveToCurrentCell();
+            return;
+        }
+
+        if (view.getEnergy() > 10000) {
+            try {
+                spawningReaper(botCom.freeCell(), 1000);
+            } catch (FullGridException e) {
+                if (DEBUG)
+                    logger.log(Level.FINER, "FullGridException of nextStep");
+            }
             return;
         }
 
@@ -110,7 +120,7 @@ public class ExCells26Master implements BotController {
     }
 
     private boolean positionsCheck() {
-        if (lastPositions.size() > 5) {
+        if (lastPositions.size() > 7) {
             lastPositions.remove(0);
         }
         lastPositions.add(view.locate());
@@ -121,6 +131,9 @@ public class ExCells26Master implements BotController {
             }
         }
         if (counter > 2) {
+            while (lastPositions.contains(view.locate())) {
+                lastPositions.remove(view.locate());
+            }
             changeCurrentCell();
             return true;
         }
@@ -177,6 +190,7 @@ public class ExCells26Master implements BotController {
             return Double.POSITIVE_INFINITY;
         }
     }
+
     private double checkForMaster() {
         try {
             XY positionOfNearestBadBeast = SquirrelHelper.findNextTarget(view, EntityType.MASTER_SQUIRREL);

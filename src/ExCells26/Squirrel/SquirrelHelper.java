@@ -57,11 +57,11 @@ public class SquirrelHelper {
         return freeFields.iterator().next();
     }
 
-    public static XY findNextBadBeast(ControllerContext view) throws NoTargetException {
+    public static XY findNextTarget(ControllerContext view, EntityType et) throws NoTargetException {
         XY positionOfTentativelyTarget = new XY(999, 999);
         for (int j = view.getViewUpperLeft().y; j < view.getViewLowerRight().y; j++) {
             for (int i = view.getViewUpperLeft().x; i < view.getViewLowerRight().x; i++) {
-                if (view.getEntityAt(new XY(i, j)) != EntityType.BAD_BEAST) {
+                if (view.getEntityAt(new XY(i, j)) != et) {
                     continue;
                 }
                 if (new XY(i, j).minus(view.locate()).length() < positionOfTentativelyTarget.minus(view.locate()).length()) {
@@ -74,6 +74,7 @@ public class SquirrelHelper {
         }
         return positionOfTentativelyTarget;
     }
+
 
     public static boolean goodField(EntityType entityType) {
         if (entityType == EntityType.NONE

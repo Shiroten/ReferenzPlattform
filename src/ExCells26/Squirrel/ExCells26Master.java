@@ -59,8 +59,9 @@ public class ExCells26Master implements BotController {
         if (view.getRemainingSteps() < 100) {
             collectingReapers();
         }
+
         try {
-            if (view.getEnergy() > 1000) {
+            if (view.getEnergy() > 200) {
                 spawningReaper(botCom.freeCell(), 200);
                 return;
             } else if (view.getEnergy() > 1000) {
@@ -77,7 +78,12 @@ public class ExCells26Master implements BotController {
                 logger.log(Level.FINER, "NoConnectingNeighbourException of nextStep");
         }
 
-        if (checkForDanger() < 7) {
+        if (checkForBadBeast() < 7) {
+            moveToCurrentCell();
+            return;
+        }
+
+        if (checkForMaster() < 15) {
             moveToCurrentCell();
             return;
         }
@@ -163,9 +169,17 @@ public class ExCells26Master implements BotController {
         return false;
     }
 
-    private double checkForDanger() {
+    private double checkForBadBeast() {
         try {
-            XY positionOfNearestBadBeast = SquirrelHelper.findNextBadBeast(view);
+            XY positionOfNearestBadBeast = SquirrelHelper.findNextTarget(view, EntityType.BAD_BEAST);
+            return positionOfNearestBadBeast.minus(view.locate()).length();
+        } catch (NoTargetException e) {
+            return Double.POSITIVE_INFINITY;
+        }
+    }
+    private double checkForMaster() {
+        try {
+            XY positionOfNearestBadBeast = SquirrelHelper.findNextTarget(view, EntityType.MASTER_SQUIRREL);
             return positionOfNearestBadBeast.minus(view.locate()).length();
         } catch (NoTargetException e) {
             return Double.POSITIVE_INFINITY;
